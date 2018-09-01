@@ -13,8 +13,8 @@ A library to assist in dealing with exceptions and errors in C/C++ Windows Appli
 - Simple way to get exception code, error message and stack trace in the handler block for SEH exceptions (as well as unhandled C++ exceptions which cause them)
 - Executing user-defined callback function on unhandled SEH exception
 - Helper macros for converting Win32/COM errors into exceptions
-- Configurable logging: can write diagnostic information in log file, stderr stream, Windows Event Log or other targets
-- Multithreaded: all functionality can be used from different threads independently)
+- Configurable logging: can write diagnostic information into log file, stderr stream, Windows Event Log or other targets
+- Multithreaded: all functionality can be used from different threads independently
 - All string processing in Unicode (wide characters)
 
 -----------------------------------------------------------------------------
