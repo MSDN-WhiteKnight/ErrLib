@@ -80,7 +80,7 @@ Exception 0xc0000094: Integer division by zero
 */
 ```
 
-For more code examples, see "_Examples" subdirectory.
+For more code examples, see "Examples" subdirectory.
 
 -----------------------------------------------------------------------------
 
