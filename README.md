@@ -135,10 +135,10 @@ Sets value for the specified configuration parameter.
 Parameters:
 	
 *param* - Paramater ID. Can be one of the following values:  
- ERRLIB_OUTPUT_LOGFILE (1)		Specifies the logging functions should write information into the log file. Type: BOOL.  
- ERRLIB_OUTPUT_STDERR (2)		Specifies the logging functions should write information into stderr stream (usually console). Type: BOOL.  
- ERRLIB_OUTPUT_MBOX (3)			Specifies the logging functions should display information as message box. Type: BOOL.  
- ERRLIB_OUTPUT_EVENT_LOG (4)	Specifies the logging functions should write information into Windows Event Log. Type: BOOL.  
+ ERRLIB_OUTPUT_LOGFILE (1)		Specifies that logging functions should write information into the log file. Type: BOOL.  
+ ERRLIB_OUTPUT_STDERR (2)		Specifies that logging functions should write information into stderr stream (usually console). Type: BOOL.  
+ ERRLIB_OUTPUT_MBOX (3)			Specifies that logging functions should display information as message box. Type: BOOL.  
+ ERRLIB_OUTPUT_EVENT_LOG (4)	Specifies that logging functions should write information into Windows Event Log. Type: BOOL.  
  
 *value* - The new value for parameter being set. Use TRUE/FALSE constants cast to UINT_PTR for boolean parameters.
  
@@ -180,7 +180,7 @@ Gets stack trace based on context record
 
 Parameters:
 
-*ctx* - The pointer to a CONTEXT structure, containing valid context record on input. You can obtain one via RtlCaptureContext or from exception data	
+*ctx* - The pointer to a CONTEXT structure, containing valid context record on input. You can obtain one via [RtlCaptureContext](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlcapturecontext) or from exception data	
 
 *dest* - The pointer to a caller-allocated character array that will be filled with stack trace text on output. Make sure to allocate a large enough block of memory, otherwise the text will be trimmed. The maximum supported stack trace length is indicated by ErrLib_StackLen constant
 
