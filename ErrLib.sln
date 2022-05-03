@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ErrLib_Demo", "ErrLib_Demo\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ErrLib", "ErrLib\ErrLib.vcxproj", "{2660AD30-6A0E-46CD-8838-668DAB3080EC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ErrLib_Tests", "ErrLib_Tests\ErrLib_Tests.vcxproj", "{778A86DE-0A66-4D06-85A6-6FE34D4289A1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2660AD30-6A0E-46CD-8838-668DAB3080EC} = {2660AD30-6A0E-46CD-8838-668DAB3080EC}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -32,6 +37,12 @@ Global
 		{2660AD30-6A0E-46CD-8838-668DAB3080EC}.Release|Win32.Build.0 = Release|Win32
 		{2660AD30-6A0E-46CD-8838-668DAB3080EC}.Release|x64.ActiveCfg = Release|x64
 		{2660AD30-6A0E-46CD-8838-668DAB3080EC}.Release|x64.Build.0 = Release|x64
+		{778A86DE-0A66-4D06-85A6-6FE34D4289A1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{778A86DE-0A66-4D06-85A6-6FE34D4289A1}.Debug|Win32.Build.0 = Debug|Win32
+		{778A86DE-0A66-4D06-85A6-6FE34D4289A1}.Debug|x64.ActiveCfg = Debug|Win32
+		{778A86DE-0A66-4D06-85A6-6FE34D4289A1}.Release|Win32.ActiveCfg = Release|Win32
+		{778A86DE-0A66-4D06-85A6-6FE34D4289A1}.Release|Win32.Build.0 = Release|Win32
+		{778A86DE-0A66-4D06-85A6-6FE34D4289A1}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
