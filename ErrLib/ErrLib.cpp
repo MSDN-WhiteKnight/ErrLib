@@ -15,12 +15,14 @@ LONG WINAPI ErrLib_DefaultExceptionCallback ( struct _EXCEPTION_POINTERS * ex,LP
 CRITICAL_SECTION ErrLib_DbgHlpSync={0}; //DbgHlp functions syncronization object
 CRITICAL_SECTION ErrLib_LogSync={0}; //ErrLib logging functions syncronization object
 ERRLIB_EXCEPTION_CALLBACK volatile ErrLib_pCurrentExceptionCallback = NULL; //Pointer to a user function called on unhandled exception
+ERRLIB_LOGGING_CALLBACK volatile ErrLib_pCurrentLoggingCallback = NULL; //Pointer to a user function used as a custom logging target
 LPTOP_LEVEL_EXCEPTION_FILTER volatile ErrLib_pPreviousExceptionFilter = NULL; //Unhandled exception filter which was set before ErrLib
 WCHAR ErrLib_LogFilePath[MAX_PATH]={0}; //A path to the current error log file
 BOOL volatile ErrLib_fOutputLogFile = TRUE; //Configuration flag: Output errors to log file
 BOOL volatile ErrLib_fOutputStderr = TRUE; //Configuration flag: Output errors to stderr stream
 BOOL volatile ErrLib_fOutputMbox = FALSE; //Configuration flag: Output errors as message box
 BOOL volatile ErrLib_fOutputEventLog = FALSE; //Configuration flag: Output errors into Windows Event Log
+BOOL volatile ErrLib_fOutputCustom = FALSE; //Configuration flag: Output errors into custom target
 
 /*DWORD ErrLib_LastExceptionCode = 0;
 WCHAR ErrLib_LastExceptionMessage[ErrLib_MessageLen]={0};
@@ -138,6 +140,11 @@ ERRLIB_API void __stdcall ErrLib_SetExceptionCallback(ERRLIB_EXCEPTION_CALLBACK 
         ErrLib_pCurrentExceptionCallback = pCallback;
 }
 
+//Sets current logging callback
+ERRLIB_API void __stdcall ErrLib_SetLoggingCallback(ERRLIB_LOGGING_CALLBACK pCallback){
+    ErrLib_pCurrentLoggingCallback = pCallback;
+}
+
 //Sets current log file path. The default is [MyDocuments]\[ExeFileName].log
 ERRLIB_API void __stdcall ErrLib_SetLogFilePath(LPCWSTR path){
         if(path == NULL) return;
@@ -152,6 +159,7 @@ ERRLIB_API BOOL __stdcall ErrLib_SetParameter(UINT param, UINT_PTR value){
 		case ERRLIB_OUTPUT_STDERR: ErrLib_fOutputStderr = (BOOL)value;return TRUE;
 		case ERRLIB_OUTPUT_MBOX: ErrLib_fOutputMbox = (BOOL)value;return TRUE;	
 		case ERRLIB_OUTPUT_EVENT_LOG: ErrLib_fOutputEventLog = (BOOL)value;return TRUE;
+        case ERRLIB_OUTPUT_CUSTOM: ErrLib_fOutputCustom = (BOOL)value;return TRUE;
 
 		default:return FALSE;
 	}
@@ -663,6 +671,11 @@ ERRLIB_API void __stdcall ErrLib_LogExceptionInfo(DWORD dwExcCode,LPCWSTR lpwsMe
 		MessageBox(NULL,buf,NULL,MB_SYSTEMMODAL | MB_OK | MB_ICONERROR);
 	}
 
+    //invoke custom target
+    if(ErrLib_fOutputCustom != FALSE && ErrLib_pCurrentLoggingCallback != NULL){
+        StringCchPrintf(buf,ErrLib_StackLen,L"Exception 0x%x: %s\r\n%s",dwExcCode,lpwsMessage,lpwsStackTrace);
+        ErrLib_pCurrentLoggingCallback(buf, NULL);
+    }
 
 	}__finally{
 	  LeaveCriticalSection(&ErrLib_LogSync);
@@ -759,6 +772,19 @@ ERRLIB_API void __stdcall ErrLib_LogMessage(LPCWSTR lpwsMessage, BOOL visible, D
 
 		MessageBox(NULL,lpwsMessage,caption,MB_SYSTEMMODAL | MB_OK | mbox_type);
 	}
+
+    //invoke custom target
+    if(ErrLib_fOutputCustom != FALSE && ErrLib_pCurrentLoggingCallback != NULL){
+        ZeroMemory(buf, sizeof(buf));
+        StringCchCat(buf, ErrLib_StackLen, lpwsMessage);
+
+        if(bIncludeStack){
+            StringCchCat(buf, ErrLib_StackLen, L"\r\n");
+            StringCchCat(buf, ErrLib_StackLen, lpwsStackTrace);
+        }
+
+        ErrLib_pCurrentLoggingCallback(buf, NULL);
+    }
 
 	}__finally{
 	  LeaveCriticalSection(&ErrLib_LogSync);

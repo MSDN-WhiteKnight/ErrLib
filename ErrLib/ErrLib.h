@@ -60,10 +60,16 @@
 //Specifies the logging functions should write information into Windows Event Log
 #define ERRLIB_OUTPUT_EVENT_LOG 4
 
+//Specifies that logging functions should invoke custom logging callback 
+#define ERRLIB_OUTPUT_CUSTOM 5
+
 // *** Typedefs *** 
 
 //Function pointer type used as unhandled exception callback
 typedef LONG  (WINAPI * ERRLIB_EXCEPTION_CALLBACK) ( struct _EXCEPTION_POINTERS *,LPCWSTR,LPCWSTR);
+
+//Function pointer type used for custom logging targets
+typedef void (WINAPI * ERRLIB_LOGGING_CALLBACK) (LPCWSTR, void*);
 
 // *** Custom exception codes for SEH *** 
 
@@ -87,6 +93,9 @@ ERRLIB_API void __stdcall ErrLib_ErrorMes(LPTSTR lpszFunction,DWORD dw,WCHAR* bu
 
 //Gets filename from full path
 ERRLIB_API WCHAR* __stdcall ErrLib_FileNameFromPathW(WCHAR* path);
+
+//Sets current logging callback
+ERRLIB_API void __stdcall ErrLib_SetLoggingCallback(ERRLIB_LOGGING_CALLBACK pCallback);
 
 //Sets current exception callback. Specify NULL to call default callback
 ERRLIB_API void __stdcall ErrLib_SetExceptionCallback(ERRLIB_EXCEPTION_CALLBACK pCallback);

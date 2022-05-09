@@ -23,6 +23,12 @@ void func(){
 	func1();
 }
 
+WCHAR buf[5000]=L"";
+
+void WINAPI MyLoggingCallback(LPCWSTR pStr, void* pExtraInfo){
+    wcscpy(buf, pStr);
+}
+
 namespace ErrLib_Tests
 {
     TEST_CLASS(Tests) 
@@ -65,6 +71,16 @@ namespace ErrLib_Tests
                 match = wcsstr(stack,L"tests.cpp;");
                 Assert::IsTrue(match!=NULL);
             }
+        }
+
+        TEST_METHOD(Test_Errlib_CustomTarget)
+        {
+            ErrLib_SetParameter(ERRLIB_OUTPUT_CUSTOM, (UINT_PTR)TRUE);
+            ErrLib_SetLoggingCallback(MyLoggingCallback);
+            ZeroMemory(buf, sizeof(buf));
+            ErrLib_LogMessage(L"Test_Errlib_CustomTarget", FALSE, MSG_INFORMATION, FALSE);
+            Assert::AreEqual(L"Test_Errlib_CustomTarget", buf);
+            ErrLib_SetParameter(ERRLIB_OUTPUT_CUSTOM, (UINT_PTR)FALSE);
         }
     };
 }
