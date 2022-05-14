@@ -1,5 +1,7 @@
 # ErrLib
 
+[![Nuget](https://img.shields.io/nuget/v/SmallSoft.ErrLib)](https://www.nuget.org/packages/SmallSoft.ErrLib/)
+
 A library to assist in dealing with exceptions and errors in C/C++ Windows Applications
 
 **Author:** MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)

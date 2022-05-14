@@ -173,10 +173,10 @@ ErrLib_ErrorMes((L#func),ErrLibLocal_LastError,(WCHAR*)ErrLib_StrBuf_GetPointer(
 ((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[0]=(ULONG_PTR)ErrLibLocal_LastError;((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[1]=(ULONG_PTR)ErrLib_StrBuf_GetPointer();\
 RaiseException(ERRLIB_WIN32_EXCEPTION,0,2,((ULONG_PTR*)ErrLib_ExArgs_GetPointer()));}
 
-//SEH Catch block that executes handles for all exceptions
+//SEH Catch block that executes handler for all exceptions
 #define ERRLIB_CATCH_ALL __except(ErrLib_CatchAll(GetExceptionInformation()))
 
-//SEH Catch block that executes handles for exceptions with specified code
+//SEH Catch block that executes handler for exceptions with specified code
 #define ERRLIB_CATCH(code) __except(ErrLib_CatchCode(GetExceptionInformation(),code))
 
 #endif
