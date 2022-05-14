@@ -1,25 +1,23 @@
-﻿========================================================================
-    ErrLib 
-========================================================================
+## About
 
 A library to assist in dealing with exceptions and errors in C/C++ Windows Applications
 
-Author: MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
-License: BSD 3-clause
-Requirements: Windows Vista or newer, Visual Studio 2010+ (VS 2015+ or NuGet 3.3+ for NuGet package)
+**Author:** MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
 
-** Features **
+**License:** BSD 3-clause
+
+**Requirements:** Windows Vista or newer, Visual Studio 2010+ (VS 2015+ or NuGet 3.3+ for NuGet package)
+
+## Features
 
 - Simple way to get exception code, error message and stack trace in the handler block for SEH exceptions (as well as unhandled C++ exceptions which cause them)
 - Executing user-defined callback function on unhandled SEH exception
 - Helper macros for converting Win32/COM errors into exceptions
-- Configurable logging: can write diagnostic information in log file, stderr stream, Windows Event Log or other targets
-- Multithreaded: all functionality can be used from different threads independently)
+- Configurable logging: can write diagnostic information into log file, stderr stream, Windows Event Log or other targets
+- Multithreaded: all functionality can be used from different threads independently
 - All string processing in Unicode (wide characters)
 
-========================================================================
-
-** Usage **
+## Usage
 
 Include ErrLib.h in one of more of your modules and have fun using ErrLib functions (see below)!
 
@@ -30,8 +28,9 @@ Notes:
 - Enable full debug information in Visual Studio 2017 and above for complete stack traces (/DEBUG:FULL in linker options).
 - You might need to switch toolset version to VS2012 in Debug x64 builds to use SEH catch blocks.
 
-Example:
+## Example
 
+```
 #include <stdio.h>
 #include <tchar.h>
 #include "ErrLib.h"
@@ -75,5 +74,6 @@ Exception 0xc0000094: Integer division by zero
   in ntdll.dll!RtlInitializeExceptionChain (C:\Windows\SysWOW64\ntdll.dll; address: 0x770c9832)
   in ntdll.dll!RtlInitializeExceptionChain (C:\Windows\SysWOW64\ntdll.dll; address: 0x770c9805)
 */
+```
 
-========================================================================
+For more information, see [Documentation](https://github.com/MSDN-WhiteKnight/ErrLib/blob/master/README.md) and [Examples](https://github.com/MSDN-WhiteKnight/ErrLib/tree/master/Examples).
