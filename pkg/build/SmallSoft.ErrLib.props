@@ -1,0 +1,23 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies Condition="'$(Platform)'=='x64'">
+          $(MSBuildThisFileDirectory)native\x64\ErrLib.lib;%(AdditionalDependencies)
+      </AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Platform)'!='x64'">
+          $(MSBuildThisFileDirectory)native\x86\ErrLib.lib;%(AdditionalDependencies)
+      </AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>    
+  </ItemDefinitionGroup>
+  <ItemGroup Condition="'$(Platform)'=='x64'">
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)native\x64\ErrLib.dll" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Platform)'!='x64'">
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)native\x86\ErrLib.dll" />
+  </ItemGroup>
+  
+</Project>
