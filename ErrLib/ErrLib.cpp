@@ -36,6 +36,22 @@ DWORD volatile ErrLib_tlsiLastExceptionStack = 0;
 DWORD volatile ErrLib_tlsiStrBuf = 0;
 DWORD volatile ErrLib_tlsiExArgs = 0;
 
+//https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros?view=msvc-160
+const int VISUAL_STUDIO_V2015 = 1900;
+const int VISUAL_STUDIO_V2019 = 1920;
+
+#if defined(_MSC_VER)
+const int VisualCppVersion = _MSC_VER;
+#else
+const int VisualCppVersion = 0;
+#endif
+
+#if defined(_M_AMD64)
+const BOOL IsCPUx64 = TRUE;
+#else
+const BOOL IsCPUx64 = FALSE;
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -379,6 +395,26 @@ ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource(){
 	return TRUE;
 }
 
+BOOL IsModuleLoaded(const char* moduleName) {
+	HMODULE hModule = GetModuleHandleA(moduleName);
+	return hModule != NULL;
+}
+
+BOOL IsOnUniversalCrt() {
+	BOOL res = IsModuleLoaded("ucrtbase.dll");
+	if (res != FALSE) return TRUE;
+
+	res = IsModuleLoaded("ucrtbased.dll");
+	return res;
+}
+
+BOOL IsOnVisualCpp2015OrAbove() {
+
+	if (VisualCppVersion >= VISUAL_STUDIO_V2015) return TRUE;
+
+	return IsOnUniversalCrt();
+}
+
 //Prints stack trace based on context record
 ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t cch) 
 {
@@ -386,6 +422,10 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
     HANDLE  process= NULL;
     HANDLE  thread= NULL;
     HMODULE hModule= NULL;
+
+    // Workaround for the crash with new Visual C++ versions
+    // (https://github.com/MSDN-WhiteKnight/ErrLib/issues/2)
+    if (IsCPUx64 != FALSE && IsDebuggerPresent() != FALSE && IsOnVisualCpp2015OrAbove() != FALSE) return;
 
     STACKFRAME64        stack;
     ULONG               frame=0;    
@@ -485,7 +525,7 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
                                 L"  in %s!%s (%s; address: 0x%llx)\n", module_short,pSymbol->Name, module,
                                 (DWORD64)(stack.AddrPC.Offset - pSymbol->ModBase));
             StringCchCat(dest,cch,strbuf);                   
-        }       
+        }
 
         free(line);
         line = NULL;
