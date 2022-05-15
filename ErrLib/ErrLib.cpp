@@ -817,7 +817,7 @@ ERRLIB_API LONG __stdcall ErrLib_CatchAll( struct _EXCEPTION_POINTERS * ex){
 	*((DWORD*)ErrLib_LastExceptionCode_GetPointer()) = ex->ExceptionRecord->ExceptionCode;
 	ErrLib_GetExceptionMessage(ex,ErrLib_Except_GetMessage(),ErrLib_MessageLen);
 	ErrLib_PrintStack(ex->ContextRecord,ErrLib_Except_GetStackTrace(),ErrLib_StackLen);
-	return EXCEPTION_EXECUTE_HANDLER;	
+	return EXCEPTION_EXECUTE_HANDLER;
 }
 
 #ifdef __cplusplus
