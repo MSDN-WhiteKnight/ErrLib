@@ -5,6 +5,16 @@
 #include "ErrLib.h"
 #include "event.h"
 
+//https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros?view=msvc-160
+const int VISUAL_STUDIO_V2015 = 1900;
+const int VISUAL_STUDIO_V2019 = 1920;
+
+#if defined(_MSC_VER)
+const int VisualCppVersion = _MSC_VER;
+#else
+const int VisualCppVersion = 0;
+#endif
+
 // *** internal functions *** 
 
 LONG WINAPI ErrLib_MyUnhandledExceptionFilter( struct _EXCEPTION_POINTERS *ExceptionInfo);
@@ -24,6 +34,9 @@ BOOL volatile ErrLib_fOutputMbox = FALSE; //Configuration flag: Output errors as
 BOOL volatile ErrLib_fOutputEventLog = FALSE; //Configuration flag: Output errors into Windows Event Log
 BOOL volatile ErrLib_fOutputCustom = FALSE; //Configuration flag: Output errors into custom target
 
+int ErrLib_VisualCppRtVersion = VisualCppVersion;
+BOOL ErrLib_fDebugBuild = FALSE;
+
 /*DWORD ErrLib_LastExceptionCode = 0;
 WCHAR ErrLib_LastExceptionMessage[ErrLib_MessageLen]={0};
 WCHAR ErrLib_LastExceptionStack[ErrLib_StackLen]={0};
@@ -35,16 +48,6 @@ DWORD volatile ErrLib_tlsiLastExceptionMessage = 0;
 DWORD volatile ErrLib_tlsiLastExceptionStack = 0;
 DWORD volatile ErrLib_tlsiStrBuf = 0;
 DWORD volatile ErrLib_tlsiExArgs = 0;
-
-//https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros?view=msvc-160
-const int VISUAL_STUDIO_V2015 = 1900;
-const int VISUAL_STUDIO_V2019 = 1920;
-
-#if defined(_MSC_VER)
-const int VisualCppVersion = _MSC_VER;
-#else
-const int VisualCppVersion = 0;
-#endif
 
 #if defined(_M_AMD64)
 const BOOL IsCPUx64 = TRUE;
@@ -177,6 +180,9 @@ ERRLIB_API BOOL __stdcall ErrLib_SetParameter(UINT param, UINT_PTR value){
 		case ERRLIB_OUTPUT_EVENT_LOG: ErrLib_fOutputEventLog = (BOOL)value;return TRUE;
         case ERRLIB_OUTPUT_CUSTOM: ErrLib_fOutputCustom = (BOOL)value;return TRUE;
 
+        case ERRLIB_PARAM_VISUALCPPVERSION: ErrLib_VisualCppRtVersion = (int)value;return TRUE;
+        case ERRLIB_PARAM_ISDEBUGBUILD: ErrLib_fDebugBuild = (BOOL)value;return TRUE;
+
 		default:return FALSE;
 	}
 }
@@ -267,7 +273,7 @@ ERRLIB_API BOOL __stdcall ErrLib_InitTLS(){
 }
 
 //Initializes the library. Must be called before any other functionality is used.
-ERRLIB_API BOOL __stdcall ErrLib_Initialize(){
+ERRLIB_API BOOL __stdcall ErrLib_InitializeInternal(){
         BOOL res = FALSE;
 		HRESULT hr=S_OK;
         PWSTR documents_path=NULL;
@@ -412,7 +418,7 @@ BOOL IsOnVisualCpp2015OrAbove() {
 
 	if (VisualCppVersion >= VISUAL_STUDIO_V2015) return TRUE;
 
-	return IsOnUniversalCrt();
+	return ErrLib_VisualCppRtVersion >= VISUAL_STUDIO_V2015;
 }
 
 //Prints stack trace based on context record
@@ -425,7 +431,8 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
 
     // Workaround for the crash with new Visual C++ versions
     // (https://github.com/MSDN-WhiteKnight/ErrLib/issues/2)
-    if (IsCPUx64 != FALSE && IsDebuggerPresent() != FALSE && IsOnVisualCpp2015OrAbove() != FALSE) return;
+    if (IsCPUx64 != FALSE && IsDebuggerPresent() != FALSE && IsOnVisualCpp2015OrAbove() != FALSE
+        && ErrLib_fDebugBuild != FALSE) return;
 
     STACKFRAME64        stack;
     ULONG               frame=0;    
