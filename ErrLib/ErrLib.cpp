@@ -400,7 +400,7 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
     HANDLE  process= NULL;
     HANDLE  thread= NULL;
     HMODULE hModule= NULL;
-    
+
     STACKFRAME64        stack;
     ULONG               frame=0;    
     DWORD64             displacement=0;
