@@ -4,6 +4,7 @@
 #define ERRLIB_EXPORTS
 #include "ErrLib.h"
 #include "event.h"
+#include "vcdefs.h"
 
 // *** internal functions *** 
 
@@ -24,11 +25,8 @@ BOOL volatile ErrLib_fOutputMbox = FALSE; //Configuration flag: Output errors as
 BOOL volatile ErrLib_fOutputEventLog = FALSE; //Configuration flag: Output errors into Windows Event Log
 BOOL volatile ErrLib_fOutputCustom = FALSE; //Configuration flag: Output errors into custom target
 
-/*DWORD ErrLib_LastExceptionCode = 0;
-WCHAR ErrLib_LastExceptionMessage[ErrLib_MessageLen]={0};
-WCHAR ErrLib_LastExceptionStack[ErrLib_StackLen]={0};
-WCHAR ErrLib_StrBuf[ErrLib_MessageLen]={0};
-ULONG_PTR ErrLib_ExArgs[2]={0};*/
+int ErrLib_VisualCppRtVersion = VisualCppVersion;
+BOOL ErrLib_fDebugBuild = FALSE;
 
 DWORD volatile ErrLib_tlsiLastExceptionCode = 0;
 DWORD volatile ErrLib_tlsiLastExceptionMessage = 0;
@@ -39,6 +37,19 @@ DWORD volatile ErrLib_tlsiExArgs = 0;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+BOOL IsOnVisualCpp2015OrAbove() {
+
+    if (VisualCppVersion >= VISUAL_STUDIO_V2015) return TRUE;
+
+    return ErrLib_VisualCppRtVersion >= VISUAL_STUDIO_V2015;
+}
+
+BOOL IsStackTraceDisabled() {
+    // Workaround for the crash with new Visual C++ versions
+    // (https://github.com/MSDN-WhiteKnight/ErrLib/issues/2)
+    return IsCPUx64 && IsOnVisualCpp2015OrAbove() && ErrLib_fDebugBuild;
+}
 
 /* Pointer getters*/
 
@@ -161,6 +172,9 @@ ERRLIB_API BOOL __stdcall ErrLib_SetParameter(UINT param, UINT_PTR value){
 		case ERRLIB_OUTPUT_EVENT_LOG: ErrLib_fOutputEventLog = (BOOL)value;return TRUE;
         case ERRLIB_OUTPUT_CUSTOM: ErrLib_fOutputCustom = (BOOL)value;return TRUE;
 
+        case ERRLIB_PARAM_VISUALCPPVERSION: ErrLib_VisualCppRtVersion = (int)value;return TRUE;
+        case ERRLIB_PARAM_ISDEBUGBUILD: ErrLib_fDebugBuild = (BOOL)value;return TRUE;
+
 		default:return FALSE;
 	}
 }
@@ -251,7 +265,7 @@ ERRLIB_API BOOL __stdcall ErrLib_InitTLS(){
 }
 
 //Initializes the library. Must be called before any other functionality is used.
-ERRLIB_API BOOL __stdcall ErrLib_Initialize(){
+ERRLIB_API BOOL __stdcall ErrLib_InitializeInternal(){
         BOOL res = FALSE;
 		HRESULT hr=S_OK;
         PWSTR documents_path=NULL;
@@ -485,7 +499,7 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
                                 L"  in %s!%s (%s; address: 0x%llx)\n", module_short,pSymbol->Name, module,
                                 (DWORD64)(stack.AddrPC.Offset - pSymbol->ModBase));
             StringCchCat(dest,cch,strbuf);                   
-        }       
+        }
 
         free(line);
         line = NULL;
@@ -801,23 +815,30 @@ ERRLIB_API DWORD __stdcall ErrLib_Except_GetCode(){
 // *** Catch functions ***
 
 ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWORD FilteredCode){
-	
 
-	if(ex->ExceptionRecord->ExceptionCode == FilteredCode){
-		*((DWORD*)ErrLib_LastExceptionCode_GetPointer()) = ex->ExceptionRecord->ExceptionCode;
-		ErrLib_GetExceptionMessage(ex,ErrLib_Except_GetMessage(),ErrLib_MessageLen);
-		ErrLib_PrintStack(ex->ContextRecord,ErrLib_Except_GetStackTrace(),ErrLib_StackLen);
-		return EXCEPTION_EXECUTE_HANDLER;
-	}
-	else return EXCEPTION_CONTINUE_SEARCH;
+    if(ex->ExceptionRecord->ExceptionCode == FilteredCode){
+        *((DWORD*)ErrLib_LastExceptionCode_GetPointer()) = ex->ExceptionRecord->ExceptionCode;
+        ErrLib_GetExceptionMessage(ex,ErrLib_Except_GetMessage(),ErrLib_MessageLen);
+
+        if (!IsStackTraceDisabled()) {
+            ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
+        }
+
+        return EXCEPTION_EXECUTE_HANDLER;
+    }
+    else return EXCEPTION_CONTINUE_SEARCH;
 }
 
 ERRLIB_API LONG __stdcall ErrLib_CatchAll( struct _EXCEPTION_POINTERS * ex){
 
-	*((DWORD*)ErrLib_LastExceptionCode_GetPointer()) = ex->ExceptionRecord->ExceptionCode;
-	ErrLib_GetExceptionMessage(ex,ErrLib_Except_GetMessage(),ErrLib_MessageLen);
-	ErrLib_PrintStack(ex->ContextRecord,ErrLib_Except_GetStackTrace(),ErrLib_StackLen);
-	return EXCEPTION_EXECUTE_HANDLER;
+    *((DWORD*)ErrLib_LastExceptionCode_GetPointer()) = ex->ExceptionRecord->ExceptionCode;
+    ErrLib_GetExceptionMessage(ex,ErrLib_Except_GetMessage(),ErrLib_MessageLen);
+
+    if (!IsStackTraceDisabled()) {
+        ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
+    }
+
+    return EXCEPTION_EXECUTE_HANDLER;
 }
 
 #ifdef __cplusplus

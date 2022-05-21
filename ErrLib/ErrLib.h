@@ -12,13 +12,14 @@
 #include <DbgHelp.h>
 #include <Shlobj.h>
 
-
 #ifdef __cplusplus
 #include <exception>
 #include <comdef.h>
 #define ERRLIB_REFERENCE
+#define INLINE inline
 #else
 #define ERRLIB_REFERENCE &
+#define INLINE __inline
 #endif
 
 #pragma comment(lib, "advapi32.lib")
@@ -63,6 +64,9 @@
 //Specifies that logging functions should invoke custom logging callback 
 #define ERRLIB_OUTPUT_CUSTOM 5
 
+#define ERRLIB_PARAM_VISUALCPPVERSION 100
+#define ERRLIB_PARAM_ISDEBUGBUILD 101
+
 // *** Typedefs *** 
 
 //Function pointer type used as unhandled exception callback
@@ -106,8 +110,22 @@ ERRLIB_API void __stdcall ErrLib_SetLogFilePath(LPCWSTR path);
 //Sets value for the specified configuration parameter
 ERRLIB_API BOOL __stdcall ErrLib_SetParameter(UINT param, UINT_PTR value);
 
+//Initializes the library.
+ERRLIB_API BOOL __stdcall ErrLib_InitializeInternal();
+
 //Initializes the library. Must be called before any other functionality is used.
-ERRLIB_API BOOL __stdcall ErrLib_Initialize();
+BOOL INLINE ErrLib_Initialize(){
+    BOOL ret = ErrLib_InitializeInternal();
+#ifdef _MSC_VER
+    ErrLib_SetParameter(ERRLIB_PARAM_VISUALCPPVERSION, (UINT_PTR)_MSC_VER);
+#endif
+
+#ifdef _DEBUG
+    ErrLib_SetParameter(ERRLIB_PARAM_ISDEBUGBUILD, (UINT_PTR)TRUE);
+#endif
+
+    return ret;
+}
 
 ERRLIB_API BOOL __stdcall ErrLib_InitTLS();
 ERRLIB_API BOOL __stdcall ErrLib_InitThread();

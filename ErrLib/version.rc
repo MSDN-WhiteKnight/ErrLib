@@ -1,0 +1,60 @@
+#include <windows.h>
+
+// Version info
+
+#ifndef DEBUG
+#define VER_DEBUG                   0
+#define LIBRARY_TITLE               "ErrLib "
+#else
+#define VER_DEBUG                   VS_FF_DEBUG
+#define LIBRARY_TITLE               "ErrLib Debug "
+#endif
+
+#define LIBRARY_VERSION L"v1.1"
+#define LIBRARY_VER_MAJOR 1
+#define LIBRARY_VER_MINOR 1
+
+#define VER_FILEVERSION             LIBRARY_VER_MAJOR,LIBRARY_VER_MINOR,0,0
+#define VER_PRODUCTVERSION          LIBRARY_VER_MAJOR,LIBRARY_VER_MINOR,0,0
+
+#ifndef LIBRARY_BUILD_INFO
+#define LIBRARY_BUILD_INFO ""
+#endif
+
+#ifdef ARCHITECTURE_X64
+#define LIBRARY_ARCHITECTURE        "x64"
+#else
+#define LIBRARY_ARCHITECTURE        "x86"
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     VER_FILEVERSION
+PRODUCTVERSION  VER_PRODUCTVERSION
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       VER_DEBUG
+FILEOS          VOS__WINDOWS32
+FILETYPE        VFT_DLL
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041904B0"
+        BEGIN
+            VALUE "CompanyName",      "SmallSoft"
+            VALUE "FileDescription",  LIBRARY_TITLE LIBRARY_ARCHITECTURE
+            VALUE "FileVersion",      LIBRARY_VERSION
+            VALUE "InternalName",     LIBRARY_TITLE
+            VALUE "LegalCopyright",   "(c) MSDN.WhiteKnight, 2022"
+            VALUE "OriginalFilename", "ErrLib.dll"
+            VALUE "ProductName",      LIBRARY_TITLE
+            VALUE "ProductVersion",   LIBRARY_VERSION
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+
+        VALUE "Translation", 0x419, 1200
+
+    END 
+END
