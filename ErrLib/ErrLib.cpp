@@ -48,7 +48,7 @@ BOOL IsOnVisualCpp2015OrAbove() {
 BOOL IsStackTraceDisabled() {
     // Workaround for the crash with new Visual C++ versions
     // (https://github.com/MSDN-WhiteKnight/ErrLib/issues/2)
-    return IsCPUx64 && IsDebuggerPresent() && IsOnVisualCpp2015OrAbove() && ErrLib_fDebugBuild;
+    return IsCPUx64 && IsOnVisualCpp2015OrAbove() && ErrLib_fDebugBuild;
 }
 
 /* Pointer getters*/
