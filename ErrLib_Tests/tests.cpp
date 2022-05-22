@@ -3,6 +3,7 @@
 #include <string.h>
 #include "CppUnitTest.h"
 #include "ErrLib.h"
+#include "vcdefs.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -62,8 +63,8 @@ namespace ErrLib_Tests
             Assert::AreEqual(L"Integer division by zero",message);
             Assert::IsTrue(wcslen(stack)>20);
 
-            //Stack trace
-            if(DEBUG_BUILD){
+            //Stack trace (disabled in x64 - issue #2) 
+            if(DEBUG_BUILD && !IsCPUx64){
                 match = wcsstr(stack,L"ErrLib_Tests.dll!func1");
                 Assert::IsTrue(match!=NULL);
             
