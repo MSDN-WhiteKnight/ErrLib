@@ -1,4 +1,4 @@
-name: ErrLib x64 CI
+name: ErrLib x64
 
 on: 
   push:
