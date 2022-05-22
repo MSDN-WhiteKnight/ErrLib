@@ -16,10 +16,10 @@
 #include <exception>
 #include <comdef.h>
 #define ERRLIB_REFERENCE
-#define INLINE inline
+#define ERRLIB_INLINE inline
 #else
 #define ERRLIB_REFERENCE &
-#define INLINE __inline
+#define ERRLIB_INLINE __inline
 #endif
 
 #pragma comment(lib, "advapi32.lib")
@@ -114,7 +114,7 @@ ERRLIB_API BOOL __stdcall ErrLib_SetParameter(UINT param, UINT_PTR value);
 ERRLIB_API BOOL __stdcall ErrLib_InitializeInternal();
 
 //Initializes the library. Must be called before any other functionality is used.
-BOOL INLINE ErrLib_Initialize(){
+BOOL ERRLIB_INLINE ErrLib_Initialize(){
     BOOL ret = ErrLib_InitializeInternal();
 #ifdef _MSC_VER
     ErrLib_SetParameter(ERRLIB_PARAM_VISUALCPPVERSION, (UINT_PTR)_MSC_VER);
