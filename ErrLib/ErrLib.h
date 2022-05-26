@@ -109,7 +109,7 @@ extern "C" {
 #endif
 
 /**
- * Gets Win32 error message for current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+ * Gets Win32 error message for the specified function name and error code. The message depends on the OS locale.
  * 
  * @param lpszFunction The name of the function which might have caused the error
  * @param dw Error code returned by GetLastError()
