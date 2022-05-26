@@ -1,6 +1,22 @@
 //Project: ErrLib
 //Author: MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
 
+/** \file ErrLib.h
+ * ErrLib public API
+ */
+ 
+/** \mainpage ErrLib documentation
+ *
+ * \section intro_sec Contents
+ *
+ * \ref ErrLib.h
+ *
+ * \section seealso_sec See also
+ * 
+ * [Source code](https://github.com/MSDN-WhiteKnight/ErrLib)
+ *
+ */
+
 #ifndef ErrLib_H_INCLUDED
 #define ErrLib_H_INCLUDED
 #include <stdlib.h>
@@ -92,7 +108,13 @@ typedef void (WINAPI * ERRLIB_LOGGING_CALLBACK) (LPCWSTR, void*);
 extern "C" {
 #endif
 
-//Gets Win32 error message for specified function name and error code
+/**
+ * Gets Win32 error message for current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+ * 
+ * @param lpszFunction The name of the function which might have caused the error
+ * @param dw Error code returned by GetLastError()
+ * @param buf Pointer to character array to store the result string
+ */
 ERRLIB_API void __stdcall ErrLib_ErrorMes(LPTSTR lpszFunction,DWORD dw,WCHAR* buf);
 
 //Gets filename from full path
