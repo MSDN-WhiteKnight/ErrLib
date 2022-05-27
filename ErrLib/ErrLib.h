@@ -123,19 +123,54 @@ ERRLIB_API WCHAR* __stdcall ErrLib_FileNameFromPathW(WCHAR* path);
 //Sets current logging callback
 ERRLIB_API void __stdcall ErrLib_SetLoggingCallback(ERRLIB_LOGGING_CALLBACK pCallback);
 
-//Sets current exception callback. Specify NULL to call default callback
+/**
+ * Sets current exception callback - the user-defined function which will be called in case of unhandled SEH exception when there's no debugger attahed to the process. 
+ * Specify NULL to call default callback.
+ * 
+ * @param pCallback The pointer to callback function
+ * 
+ * The callback function must be defined as follows: `LONG WINAPI MyExceptionCallback (struct _EXCEPTION_POINTERS* ex, LPCWSTR mes, LPCWSTR stack) {...}`
+ *
+ * The **ex** parameter of the callback function points to the exception information structure. The **mes** and **stack** parameters point to strings containing human-readable error message and stack trace respectively.
+ *
+ * Return EXCEPTION_EXECUTE_HANDLER from callback function to execute default handler (in most cases in will crash application, invoking default Windows Error Reporting dialog window).
+ * Call exit function without returning anything, if you want to avoid this behaviour and terminate application normally.
+ *
+ * The default callback writes exception information into configured logging targets and then crashes application.
+ */
 ERRLIB_API void __stdcall ErrLib_SetExceptionCallback(ERRLIB_EXCEPTION_CALLBACK pCallback);
 
-//Sets current log file path. The default is [MyDocuments]\[ExeFileName].log
+/**
+ * Sets current log file path. The default is `[MyDocuments]\[ExeFileName].log`
+ * 
+ * @note Only has any effect if ERRLIB_OUTPUT_LOGFILE configuration parameter is set to TRUE.
+ */
 ERRLIB_API void __stdcall ErrLib_SetLogFilePath(LPCWSTR path);
 
-//Sets value for the specified configuration parameter
+/**
+ * Sets a value for the specified configuration parameter
+ * 
+ * @param param Paramater ID
+ * @param value The new value for the parameter being set. Use TRUE/FALSE constants cast to UINT_PTR for boolean parameters.
+ * @returns Non-zero value if operation succeeded, zero if parameter ID is not recognized or error occured.
+ *
+ * The paramater ID can be one of the following values:
+ * - ERRLIB_OUTPUT_LOGFILE (1). Specifies that logging functions should write information into the log file. Type: BOOL.
+ * - ERRLIB_OUTPUT_STDERR (2). Specifies that logging functions should write information into stderr stream (usually console). Type: BOOL.
+ * - ERRLIB_OUTPUT_MBOX (3). Specifies that logging functions should display information as message box. Type: BOOL.
+ * - ERRLIB_OUTPUT_EVENT_LOG (4). Specifies that logging functions should write information into Windows Event Log. Type: BOOL.
+ */
 ERRLIB_API BOOL __stdcall ErrLib_SetParameter(UINT param, UINT_PTR value);
 
 //Initializes the library.
 ERRLIB_API BOOL __stdcall ErrLib_InitializeInternal();
 
-//Initializes the library. Must be called before any other functionality is used.
+/**
+ * Initializes the library. Must be called before any other functionality is used.
+ * 
+ * @returns Non-zero value if operation succeeded, zero if error occured
+ * @note If you call any of the library functions without a prior call to ErrLib_Initialize, the behaviour is undefined.
+ */
 BOOL ERRLIB_INLINE ErrLib_Initialize(){
     BOOL ret = ErrLib_InitializeInternal();
 #ifdef _MSC_VER
@@ -153,10 +188,21 @@ ERRLIB_API BOOL __stdcall ErrLib_InitTLS();
 ERRLIB_API BOOL __stdcall ErrLib_InitThread();
 ERRLIB_API void __stdcall ErrLib_FreeThread();
 
-//Creates registry data for Windows Event Log. Requires elevated priveleges. 
+/**
+ * Creates registry data for Windows Event Log. Requires elevated priveleges.
+ * 
+ * @returns Non-zero value if operation succeeded, zero if error occured
+ * @note This function fails if the program runs without elevated priveleges, but it sufficient to only call it once (for example, when application is installed).
+ */
 ERRLIB_API BOOL __stdcall ErrLib_RegisterEventSource();
 
-//Deletes Windows Event Log registry data. Requires elevated priveleges. 
+/**
+ * Deletes Windows Event Log registry data. Requires elevated priveleges.
+ * 
+ * @returns Non-zero value if operation succeeded, zero if error occured
+ * @note The registry data is required not so much for writing into Event Log, but in order for the Event Viewer application to correctly display them. 
+ * Therefore, do not call this function on every application exit; instead only do so when its events are no longer needed (i.e., when application is uninstalled).
+ */
 ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource();
 
 //Prints stack trace based on context record
