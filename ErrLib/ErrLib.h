@@ -145,10 +145,11 @@ ERRLIB_API void __stdcall ErrLib_SetLoggingCallback(ERRLIB_LOGGING_CALLBACK pCal
  * 
  * The callback function must be defined as follows: `LONG WINAPI MyExceptionCallback (struct _EXCEPTION_POINTERS* ex, LPCWSTR mes, LPCWSTR stack) {...}`
  *
- * The **ex** parameter of the callback function points to the exception information structure. The **mes** and **stack** parameters point to strings containing human-readable error message and stack trace respectively.
+ * The **ex** parameter of the callback function points to the exception information structure. 
+ * The **mes** and **stack** parameters point to strings containing human-readable error message and stack trace respectively.
  *
- * Return EXCEPTION_EXECUTE_HANDLER from callback function to execute default handler (in most cases in will crash application, invoking default Windows Error Reporting dialog window).
- * Call exit function without returning anything, if you want to avoid this behaviour and terminate application normally.
+ * Return EXCEPTION_EXECUTE_HANDLER from callback function to execute default handler (in most cases it will crash application, invoking default Windows Error Reporting 
+ * dialog window). Call `exit` function without returning anything, if you want to avoid this behaviour and terminate application normally.
  *
  * The default callback writes exception information into configured logging targets and then crashes application.
  */
