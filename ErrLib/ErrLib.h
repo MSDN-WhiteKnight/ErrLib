@@ -62,13 +62,19 @@
 
 // *** The following are the message definitions. ***
 
-// MessageId: MSG_ERROR
+/**
+ * Message type: Error (used with ErrLib_LogMessage)
+ */
 #define MSG_ERROR                        ((DWORD)0xC0020100L)
 
-// MessageId: MSG_WARNING
+/**
+ * Message type: Warning (used with ErrLib_LogMessage)
+ */
 #define MSG_WARNING                      ((DWORD)0x80020101L)
 
-// MessageId: MSG_INFORMATION
+/**
+ * Message type: Information (used with ErrLib_LogMessage)
+ */
 #define MSG_INFORMATION                  ((DWORD)0x40020102L)
 
 // *** Configuration flags *** 
@@ -304,29 +310,62 @@ ERRLIB_API void __stdcall ErrLib_HResultToString(HRESULT hr,LPTSTR lpszFunction,
 
 //**** Helper macro functions *****
 
-//Raises custom exception
+/**
+ * Raises SEH exception with user-defined error message
+ * 
+ * @note The exception code is ERRLIB_APP_EXCEPTION (0xC0400002)
+ */
 #define ERRLIB_THROW(mes) {((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[0]=(ULONG_PTR)mes;\
 RaiseException(ERRLIB_APP_EXCEPTION,0,1,((ULONG_PTR*)ErrLib_ExArgs_GetPointer()));}
 
-//Raises Win32 exception if variable is equal to the passed value
+/**
+ * Raises Win32 exception if variable is equal to the passed value
+ * 
+ * @param var Variable to be compared
+ * @param value A value for the variable to be compared against
+ * @param func The name of WINAPI function to be included in error message
+ * 
+ * This macro is useful to convert a WINAPI function's error code into exception to make it harder to ignore errors.
+ * @note The exception code is ERRLIB_WIN32_EXCEPTION (0xC0400000)
+ */
 #define ERRLIB_THROW_IF_EQUAL(var,value,func) if((var)==(value)){DWORD ErrLibLocal_LastError=GetLastError();\
 ErrLib_ErrorMes(L#func,ErrLibLocal_LastError,(WCHAR*)ErrLib_StrBuf_GetPointer());((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[0]=(ULONG_PTR)ErrLibLocal_LastError;\
 ((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[1]=(ULONG_PTR)ErrLib_StrBuf_GetPointer();RaiseException(ERRLIB_WIN32_EXCEPTION,0,2,(ULONG_PTR*)ErrLib_ExArgs_GetPointer());}
 
-//Raises COM exception if passed HRESULT indicates failure
+/**
+ * Raises COM exception if passed HRESULT indicates failure
+ * 
+ * @param var HRESULT variable to be tested for failure
+ * @param func The name of WINAPI/COM function to be included in error message
+ * 
+ * This macro is useful to convert a WINAPI/COM function's error code into exception to make it harder to ignore errors.
+ * @note The exception code is ERRLIB_COM_EXCEPTION (0xC0400001)
+ */
 #define ERRLIB_THROW_IF_FAILED(var,func) if(FAILED(var)){ErrLib_HResultToString((DWORD)var,L#func,(WCHAR*)ErrLib_StrBuf_GetPointer());\
 ((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[0]=(ULONG_PTR)var;((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[1]=(ULONG_PTR)ErrLib_StrBuf_GetPointer();RaiseException(ERRLIB_COM_EXCEPTION,0,2,((ULONG_PTR*)ErrLib_ExArgs_GetPointer()));}
 
-//Calls WINAPI function and raises Win32 exception if it fails
+/**
+ * Calls WINAPI function and raises Win32 exception if it fails. This only works for ones that return BOOL value indicating success/failure.
+ * 
+ * @param func the name of WINAPI function to be called
+ * 
+ * This macro is useful to convert a WINAPI/COM function's error code into exception to make it harder to ignore errors.
+ * @note This macro takes a variable length list of arguments to be passed into the invoked function
+ * @note If the function return anything else rather then BOOL value, use ERRLIB_THROW_IF_EQUAL instead. The exception code is ERRLIB_WIN32_EXCEPTION (0xC0400000).
+ */
 #define ERRLIB_INVOKEAPI(func, ...) if(FALSE == func( ##__VA_ARGS__ )){DWORD ErrLibLocal_LastError=GetLastError();\
 ErrLib_ErrorMes((L#func),ErrLibLocal_LastError,(WCHAR*)ErrLib_StrBuf_GetPointer());\
 ((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[0]=(ULONG_PTR)ErrLibLocal_LastError;((ULONG_PTR*)ErrLib_ExArgs_GetPointer())[1]=(ULONG_PTR)ErrLib_StrBuf_GetPointer();\
 RaiseException(ERRLIB_WIN32_EXCEPTION,0,2,((ULONG_PTR*)ErrLib_ExArgs_GetPointer()));}
 
-//SEH Catch block that executes handler for all exceptions
+/**
+ * SEH custom `_except` block that executes handler for all exceptions
+ */
 #define ERRLIB_CATCH_ALL __except(ErrLib_CatchAll(GetExceptionInformation()))
 
-//SEH Catch block that executes handler for exceptions with specified code
+/**
+ * SEH custom `_except` block that executes handler for exceptions with specified code
+ */
 #define ERRLIB_CATCH(code) __except(ErrLib_CatchCode(GetExceptionInformation(),code))
 
 #endif
