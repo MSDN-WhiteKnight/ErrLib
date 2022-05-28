@@ -42,7 +42,15 @@
 #pragma comment(lib, "Dbghelp.lib")
 
 #define ErrLib_MaxNameLen 300
+
+/**
+ * Specifies the maximum message length supported by the ErrLib_GetExceptionMessage function
+ */
 #define ErrLib_MessageLen 1024
+
+/**
+ * Specifies the maximum stack trace length supported by the ErrLib_PrintStack function
+ */
 #define ErrLib_StackLen 10000
 
 #ifdef ERRLIB_EXPORTS
@@ -205,25 +213,81 @@ ERRLIB_API BOOL __stdcall ErrLib_RegisterEventSource();
  */
 ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource();
 
-//Prints stack trace based on context record
-ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t cch);
+/**
+ * Prints stack trace for the specified context record
+ * 
+ * @param ctx The pointer to a CONTEXT structure, containing valid context record on input. 
+ * @param dest The pointer to the caller-allocated character array that will be filled with stack trace text on output. 
+ * Make sure to allocate a large enough block of memory, otherwise the text will be trimmed. The maximum supported stack trace length is indicated by ErrLib_StackLen constant.
+ * @param cch The maximum amount of characters that can be put into the array pointed by **dest** parameter
+ *
+ * @note You can obtain a context record via [RtlCaptureContext](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlcapturecontext) function 
+ * or from the exception data.
+ */
+ERRLIB_API void __stdcall ErrLib_PrintStack(CONTEXT* ctx, WCHAR* dest, size_t cch);
 
-//Prints error message for specified exception
-ERRLIB_API void __stdcall ErrLib_GetExceptionMessage(struct _EXCEPTION_POINTERS *ExceptionInfo, LPWSTR dest, size_t cch);
+/**
+ * Prints error message for specified exception
+ * 
+ * @param ExceptionInfo A pointer to the exception information structure
+ * @param dest The pointer to the caller-allocated character array that will be filled with error message text on output. 
+ * Make sure to allocate a large enough block of memory, otherwise the text will be trimmed. The maximum supported message length is indicated by ErrLib_MessageLen constant.
+ * @param cch The maximum amount of characters that can be put into the array pointed by **dest** parameter
+ */
+ERRLIB_API void __stdcall ErrLib_GetExceptionMessage(struct _EXCEPTION_POINTERS* ExceptionInfo, LPWSTR dest, size_t cch);
 
-//Outputs exception information into configured log targets
+/**
+ * Outputs the exception information into configured log targets
+ * 
+ * @param dwExcCode SEH Exception code. Use ErrLib_Except_GetCode to obtain it in exception handler block.
+ * @param lpwsMessage A pointer to the wide character string containing error message. Use ErrLib_Except_GetMessage to obtain it in exception handler block.
+ * @param lpwsStackTrace A pointer to the wide character string containing stack trace text. Use ErrLib_Except_GetStackTrace to obtain it in exception handler block.
+ * @param visible Pass TRUE if you want to use ERRLIB_OUTPUT_STDERR/ERRLIB_OUTPUT_MBOX logging targets (if they are enabled by configuration flags), FALSE otherwise
+ *
+ * This function outputs information into one or more logging targets, configured using ErrLib_SetParameter function.
+ * It only outputs information into the stderr stream and message box if the **visible** parameter is TRUE (and if respective flags are enabled).
+ * By default, the enabled logging targets are log file and stderr stream. 
+ * @note When outputting information in message box, stack trace is not included. 
+ */
 ERRLIB_API void __stdcall ErrLib_LogExceptionInfo(DWORD dwExcCode,LPCWSTR lpwsMessage,LPCWSTR lpwsStackTrace, BOOL visible);
 
-//Outputs arbitrary string into configured log targets (type can be: MSG_ERROR, MSG_WARNING or MSG_INFORMATION)
+/**
+ * Outputs arbitrary string into configured log targets
+ * 
+ * @param lpwsMessage A pointer to the wide character string containing message being written
+ * @param visible Pass TRUE if you want to use ERRLIB_OUTPUT_STDERR/ERRLIB_OUTPUT_MBOX logging targets (if they are enabled by configuration flags), FALSE otherwise
+ * @param type Can be: MSG_ERROR, MSG_WARNING or MSG_INFORMATION
+ * @param bIncludeStack Pass TRUE if you want to include stack trace into the logged information
+ *
+ * This function outputs information into one or more logging targets, configured using ErrLib_SetParameter function.
+ * It only outputs information into the stderr stream and message box if the **visible** parameter is TRUE (and if respective flags are enabled).
+ * By default, the enabled logging targets are log file and stderr stream. 
+ * @note The **type** parameter affects message box or Windows Event Log entry appearance. For other targets, it has no effect. 
+ * @note When outputting information in message box, stack trace is not included, even if **bIncludeStack** parameter is TRUE.
+ */
 ERRLIB_API void __stdcall ErrLib_LogMessage(LPCWSTR lpwsMessage, BOOL visible, DWORD type, BOOL bIncludeStack );
 
-//Get exception code for current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+/**
+ * Gets the exception code for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+ * 
+ * @note When used outside of the exception handler block, the behaviour is undefined
+ */
 ERRLIB_API DWORD __stdcall ErrLib_Except_GetCode();
 
-//Get error message for current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+/**
+ * Gets the error message for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+ * 
+ * @note When used outside of the exception handler block, the behaviour is undefined
+ */
 ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetMessage();
 
-//Get stack trace for current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+/**
+ * Gets the stack trace for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+ * 
+ * @note When used outside of the exception handler block, the behaviour is undefined.
+ * @note Starting from version 1.1, this function is not supported in VS2015+ when compiling in debug x64 configuration 
+ * (it always returns empty string in this case).
+ */
 ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetStackTrace();
 
 ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWORD FilteredCode);
