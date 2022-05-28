@@ -349,7 +349,7 @@ ErrLib_ErrorMes(L#func,ErrLibLocal_LastError,(WCHAR*)ErrLib_StrBuf_GetPointer())
  * 
  * @param func the name of WINAPI function to be called
  * 
- * This macro is useful to convert a WINAPI/COM function's error code into exception to make it harder to ignore errors.
+ * This macro is useful to convert a WINAPI function's error code into exception to make it harder to ignore errors.
  * @note This macro takes a variable length list of arguments to be passed into the invoked function
  * @note If the function return anything else rather then BOOL value, use ERRLIB_THROW_IF_EQUAL instead. The exception code is ERRLIB_WIN32_EXCEPTION (0xC0400000).
  */
