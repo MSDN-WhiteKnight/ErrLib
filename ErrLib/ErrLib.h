@@ -4,18 +4,6 @@
 /** \file ErrLib.h
  * ErrLib public API
  */
- 
-/** \mainpage ErrLib documentation
- *
- * \section intro_sec Contents
- *
- * \ref ErrLib.h
- *
- * \section seealso_sec See also
- * 
- * [Source code](https://github.com/MSDN-WhiteKnight/ErrLib)
- *
- */
 
 #ifndef ErrLib_H_INCLUDED
 #define ErrLib_H_INCLUDED
