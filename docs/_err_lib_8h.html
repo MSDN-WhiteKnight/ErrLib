@@ -66,6 +66,14 @@ Macros</h2></td></tr>
 <tr class="separator:aa4d022c97af3182d67cd28832603569b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a635324b31481c9cd2e7a395ff45e941a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a635324b31481c9cd2e7a395ff45e941a">MSG_INFORMATION</a>&#160;&#160;&#160;((DWORD)0x40020102L)</td></tr>
 <tr class="separator:a635324b31481c9cd2e7a395ff45e941a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad915a6fe6a2a73aeebaa142dbad30175"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#ad915a6fe6a2a73aeebaa142dbad30175">ERRLIB_OUTPUT_LOGFILE</a>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:ad915a6fe6a2a73aeebaa142dbad30175"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a125d697f37f34ec2b5c74ec2f946f115"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a125d697f37f34ec2b5c74ec2f946f115">ERRLIB_OUTPUT_STDERR</a>&#160;&#160;&#160;2</td></tr>
+<tr class="separator:a125d697f37f34ec2b5c74ec2f946f115"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a444818e087b2b3f2ce5b602950566f21"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a444818e087b2b3f2ce5b602950566f21">ERRLIB_OUTPUT_MBOX</a>&#160;&#160;&#160;3</td></tr>
+<tr class="separator:a444818e087b2b3f2ce5b602950566f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b8c5e7279e1d432cc0ab04b91b06c69"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a4b8c5e7279e1d432cc0ab04b91b06c69">ERRLIB_OUTPUT_EVENT_LOG</a>&#160;&#160;&#160;4</td></tr>
+<tr class="separator:a4b8c5e7279e1d432cc0ab04b91b06c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa082abe9583a38cdb3d65742d3dabf40"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#aa082abe9583a38cdb3d65742d3dabf40">ERRLIB_THROW</a>(mes)</td></tr>
 <tr class="separator:aa082abe9583a38cdb3d65742d3dabf40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62db2543a2ce82a71a979f864dbc247b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a62db2543a2ce82a71a979f864dbc247b">ERRLIB_THROW_IF_EQUAL</a>(var,  value,  func)</td></tr>
@@ -201,6 +209,66 @@ If the function return anything else rather then BOOL value, use ERRLIB_THROW_IF
       </table>
 </div><div class="memdoc">
 <p >Specifies the maximum message length supported by the ErrLib_GetExceptionMessage function </p>
+
+</div>
+</div>
+<a id="a4b8c5e7279e1d432cc0ab04b91b06c69" name="a4b8c5e7279e1d432cc0ab04b91b06c69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b8c5e7279e1d432cc0ab04b91b06c69">&#9670;&nbsp;</a></span>ERRLIB_OUTPUT_EVENT_LOG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERRLIB_OUTPUT_EVENT_LOG&#160;&#160;&#160;4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Specifies that logging functions should write information into Windows Event Log </p><dl class="section note"><dt>Note</dt><dd>This configuration parameter is used with ErrLib_SetParameter function (type: BOOL). </dd></dl>
+
+</div>
+</div>
+<a id="ad915a6fe6a2a73aeebaa142dbad30175" name="ad915a6fe6a2a73aeebaa142dbad30175"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad915a6fe6a2a73aeebaa142dbad30175">&#9670;&nbsp;</a></span>ERRLIB_OUTPUT_LOGFILE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERRLIB_OUTPUT_LOGFILE&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Specifies that logging functions should write information into the log file </p><dl class="section note"><dt>Note</dt><dd>This configuration parameter is used with ErrLib_SetParameter function (type: BOOL). </dd></dl>
+
+</div>
+</div>
+<a id="a444818e087b2b3f2ce5b602950566f21" name="a444818e087b2b3f2ce5b602950566f21"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a444818e087b2b3f2ce5b602950566f21">&#9670;&nbsp;</a></span>ERRLIB_OUTPUT_MBOX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERRLIB_OUTPUT_MBOX&#160;&#160;&#160;3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Specifies that logging functions should display information as a message box </p><dl class="section note"><dt>Note</dt><dd>This configuration parameter is used with ErrLib_SetParameter function (type: BOOL). </dd></dl>
+
+</div>
+</div>
+<a id="a125d697f37f34ec2b5c74ec2f946f115" name="a125d697f37f34ec2b5c74ec2f946f115"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a125d697f37f34ec2b5c74ec2f946f115">&#9670;&nbsp;</a></span>ERRLIB_OUTPUT_STDERR</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERRLIB_OUTPUT_STDERR&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Specifies that logging functions should write information into the stderr stream </p><dl class="section note"><dt>Note</dt><dd>This configuration parameter is used with ErrLib_SetParameter function (type: BOOL). </dd></dl>
 
 </div>
 </div>

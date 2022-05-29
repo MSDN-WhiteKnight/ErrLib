@@ -79,16 +79,28 @@
 
 // *** Configuration flags *** 
 
-//Specifies the logging functions should write information into log file
+/**
+ * Specifies that logging functions should write information into the log file
+ * @note This configuration parameter is used with ErrLib_SetParameter function (type: BOOL).
+ */
 #define ERRLIB_OUTPUT_LOGFILE 1
 
-//Specifies the logging functions should write information into stderr stream
+/**
+ * Specifies that logging functions should write information into the stderr stream
+ * @note This configuration parameter is used with ErrLib_SetParameter function (type: BOOL).
+ */
 #define ERRLIB_OUTPUT_STDERR 2
 
-//Specifies the logging functions should display information as message box
+/**
+ * Specifies that logging functions should display information as a message box
+ * @note This configuration parameter is used with ErrLib_SetParameter function (type: BOOL).
+ */
 #define ERRLIB_OUTPUT_MBOX 3
 
-//Specifies the logging functions should write information into Windows Event Log
+/**
+ * Specifies that logging functions should write information into Windows Event Log
+ * @note This configuration parameter is used with ErrLib_SetParameter function (type: BOOL).
+ */
 #define ERRLIB_OUTPUT_EVENT_LOG 4
 
 //Specifies that logging functions should invoke custom logging callback 
