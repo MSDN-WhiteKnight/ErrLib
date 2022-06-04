@@ -26,7 +26,6 @@ Notes:
 - ErrLib dynamically links to Visual C++ 2012 Standard Library (CRT) - debug or release depending on version. This means, either target machines must have Visual C++ 2012 Redistributable installed, or you must redistribute its DLLs along with your application. For any other deployment option, rebuid project from sources, changing configuration accordingly.
 - You can use ErrLib via LoadLibrary/GetProcAddress if you really want, but don't call FreeLibrary. Unloading ErrLib before process termination is not supported.
 - Enable full debug information in Visual Studio 2017 and above for complete stack traces (/DEBUG:FULL in linker options).
-- Getting stack traces in exception handlers is disabled in VS2015+ x64 debug builds.
 
 ## Example
 

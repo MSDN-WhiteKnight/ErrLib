@@ -46,9 +46,7 @@ BOOL IsOnVisualCpp2015OrAbove() {
 }
 
 BOOL IsStackTraceDisabled() {
-    // Workaround for the crash with new Visual C++ versions
-    // (https://github.com/MSDN-WhiteKnight/ErrLib/issues/2)
-    return IsCPUx64 && IsOnVisualCpp2015OrAbove() && ErrLib_fDebugBuild;
+    return FALSE;
 }
 
 /* Pointer getters*/
@@ -416,6 +414,13 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
 
     PSYMBOL_INFOW pSymbol = (PSYMBOL_INFOW)buffer;
 
+    // Context record could be modified by StackWalk64, which causes crashes on x64 when the context comes from the
+    // SEH exception information. So we create a copy here to prevent it.
+    // https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-stackwalk64
+    // https://github.com/MSDN-WhiteKnight/ErrLib/issues/2
+    CONTEXT ctxCopy;
+    memcpy(&ctxCopy, ctx, sizeof(CONTEXT));    
+
     StringCchCopy(dest,cch,L"");
     memset( &stack, 0, sizeof( STACKFRAME64 ) );
 
@@ -448,7 +453,7 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
             process,
             thread,
             &stack,
-            ctx,
+            &ctxCopy,
             NULL,
             SymFunctionTableAccess64,
             SymGetModuleBase64,

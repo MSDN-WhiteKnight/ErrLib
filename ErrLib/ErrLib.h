@@ -292,8 +292,6 @@ ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetMessage();
  * Gets the stack trace for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
  * 
  * @note When used outside of the exception handler block, the behaviour is undefined.
- * @note Starting from version 1.1, this function is not supported in VS2015+ when compiling in debug x64 configuration 
- * (it always returns empty string in this case).
  */
 ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetStackTrace();
 
