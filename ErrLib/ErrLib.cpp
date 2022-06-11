@@ -466,9 +466,10 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
         ZeroMemory(buffer,sizeof(buffer));
         pSymbol->SizeOfStruct = sizeof(SYMBOL_INFOW);
         pSymbol->MaxNameLen = MAX_SYM_NAME;
-        result = SymFromAddrW(process, ( ULONG64 )stack.AddrPC.Offset, &displacement, pSymbol);
-        if(result == FALSE){ //name not available, output address instead
-                        StringCchPrintf(pSymbol->Name,MAX_SYM_NAME,L"0x%llx",(DWORD64)stack.AddrPC.Offset);
+        BOOL symbolFound = SymFromAddrW(process, ( ULONG64 )stack.AddrPC.Offset, &displacement, pSymbol);
+
+        if(symbolFound == FALSE){ //name not available, output address instead
+            StringCchPrintf(pSymbol->Name,MAX_SYM_NAME,L"0x%llx",(DWORD64)stack.AddrPC.Offset);
         }
 
         line = (IMAGEHLP_LINEW64 *)malloc(sizeof(IMAGEHLP_LINEW64));
@@ -489,21 +490,29 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
         }
 
         //try to get line
-        if (SymGetLineFromAddrW64(process, stack.AddrPC.Offset, &disp, line))
+        BOOL lineinfoFound = FALSE;
+
+        if (symbolFound != FALSE) {
+            // Only try to find line info when symbol is found - fixes crash when Win7 DbgHelp reads PDB symbols 
+            // built with /DEBUG:FASTLINK option
+            // (https://github.com/MSDN-WhiteKnight/ErrLib/issues/2)
+            lineinfoFound = SymGetLineFromAddrW64(process, stack.AddrPC.Offset, &disp, line);
+        }
+
+        if (lineinfoFound != FALSE)
         {
             StringCchPrintf(strbuf,sizeof(strbuf)/sizeof(WCHAR),
-                                L"  in %s!%s + 0x%02llx (%s; line: %lu;)\n", module_short,pSymbol->Name, 
-                                displacement,
-                                line->FileName, line->LineNumber);
+                            L"  in %s!%s + 0x%02llx (%s; line: %lu;)\n", module_short, pSymbol->Name, 
+                            displacement, line->FileName, line->LineNumber);
             StringCchCat(dest,cch,strbuf);
         }
         else
         { 
             //failed to get line, output address instead
             StringCchPrintf(strbuf,sizeof(strbuf)/sizeof(WCHAR),
-                                L"  in %s!%s (%s; address: 0x%llx)\n", module_short,pSymbol->Name, module,
-                                (DWORD64)(stack.AddrPC.Offset - pSymbol->ModBase));
-            StringCchCat(dest,cch,strbuf);                   
+                            L"  in %s!%s (%s; address: 0x%llx)\n", module_short,pSymbol->Name, module,
+                            (DWORD64)(stack.AddrPC.Offset - pSymbol->ModBase));
+            StringCchCat(dest,cch,strbuf);
         }
 
         free(line);
