@@ -41,6 +41,23 @@ void WINAPI MyLoggingCallback(LPCWSTR pStr, void* pExtraInfo){
     wcscpy(buf, pStr);
 }
 
+void FileReadAllLines(const WCHAR* logname, WCHAR* pOutput){
+    //read content of log file
+    WCHAR* p=NULL;
+    WCHAR buf[BUFFER_SIZE]=L"";
+    FILE* fp;
+    fp = _wfopen(logname, L"rt");
+    wcscpy(pOutput,L"");
+
+    while(true){
+        p = fgetws(buf,BUFFER_SIZE,fp);
+        if(p==NULL) break;
+        wcscat(pOutput,buf);
+    }
+
+    fclose(fp);
+}
+
 namespace ErrLib_Tests
 {
     TEST_CLASS(Tests) 
@@ -89,8 +106,6 @@ namespace ErrLib_Tests
         TEST_METHOD(Test_LogMessage)
         {
             WCHAR text[BUFFER_SIZE]=L"";
-            WCHAR buf[BUFFER_SIZE];
-            WCHAR* p = NULL;
             WCHAR* match = NULL;
 
             //write message to log file
@@ -99,16 +114,7 @@ namespace ErrLib_Tests
             ErrLib_LogMessage(L"Quick brown fox", FALSE, MSG_INFORMATION, FALSE);
 
             //read content of log file
-            FILE* fp;
-            fp = _wfopen(logname, L"rt");
-
-            while(true){
-                p = fgetws(buf,BUFFER_SIZE,fp);
-                if(p==NULL) break;
-                wcscat(text,buf);
-            }
-
-            fclose(fp);
+            FileReadAllLines(logname, text);
 
             //verify content
             match = wcsstr(text, L"Quick brown fox");
@@ -118,8 +124,6 @@ namespace ErrLib_Tests
         TEST_METHOD(Test_LogExceptionInfo)
         {
             WCHAR text[BUFFER_SIZE]=L"";
-            WCHAR buf[BUFFER_SIZE];
-            WCHAR* p = NULL;
             WCHAR* match = NULL;
 
             //write exception to log file
@@ -128,16 +132,7 @@ namespace ErrLib_Tests
             ErrLib_LogExceptionInfo(1,L"ErrLib test exception",L"",FALSE);
 
             //read content of log file
-            FILE* fp;
-            fp = _wfopen(logname, L"rt");
-
-            while(true){
-                p = fgetws(buf,BUFFER_SIZE,fp);
-                if(p==NULL) break;
-                wcscat(text,buf);
-            }
-
-            fclose(fp);
+            FileReadAllLines(logname, text);
 
             //verify content
             match = wcsstr(text, L"Exception 0x1: ErrLib test exception");
@@ -173,6 +168,7 @@ namespace ErrLib_Tests
             WCHAR mes[BUFFER_SIZE]=L"";
             WCHAR stack[BUFFER_SIZE]=L"";
             WCHAR* match;
+            std::wstring stackStr;
 
             try {
                 cpp_func();
@@ -181,9 +177,10 @@ namespace ErrLib_Tests
                 code = e.GetCode();
                 data = e.GetData();
                 e.GetMessageText(mes, BUFFER_SIZE);
-                CONTEXT ctx;
-                e.GetContext(&ctx);
-                ErrLib_PrintStack(&ctx, stack, BUFFER_SIZE);
+                e.PrintStackTrace(stack, BUFFER_SIZE);
+                stackStr = e.PrintStackTrace();
+
+                Assert::AreEqual<std::wstring>(L"Error occured",e.GetMsg());
             }
 
             Assert::AreEqual(123, code);
@@ -192,6 +189,7 @@ namespace ErrLib_Tests
             
             // Stack trace
             Assert::IsTrue(wcslen(stack)>20);
+            Assert::AreEqual<std::wstring>(stackStr,stack);
 
             if(DEBUG_BUILD){
                 match = wcsstr(stack,L"ErrLib_Tests.dll!cpp_func1");
@@ -203,6 +201,39 @@ namespace ErrLib_Tests
                 match = wcsstr(stack,L"tests.cpp;");
                 Assert::IsTrue(match!=NULL);
             }
+        }
+
+        TEST_METHOD(Test_Cpp_LogExceptionInfo)
+        {
+            WCHAR text[BUFFER_SIZE]=L"";
+            WCHAR* match = NULL;
+
+            //write exception to log file
+            DeleteFile(logname);
+            ErrLib_SetLogFilePath(logname);
+            ErrLib::Exception exc(L"ErrLib test exception",(DWORD)1,(void*)nullptr);
+            exc.Log(false);
+
+            //read content of log file
+            FileReadAllLines(logname, text);
+
+            //verify content
+            match = wcsstr(text, L"Exception 0x1: ErrLib test exception");
+            Assert::IsTrue(match != NULL);
+        }
+
+        TEST_METHOD(Test_Cpp_CustomLogTarget)
+        {
+            ErrLib_SetParameter(ERRLIB_OUTPUT_CUSTOM, (UINT_PTR)TRUE);
+            ErrLib_SetLoggingCallback(MyLoggingCallback);
+            ZeroMemory(buf, sizeof(buf));
+
+            ErrLib::Exception exc(L"Test_Cpp_CustomLogTarget",(DWORD)0x0B,(void*)nullptr);
+            exc.Log(false);
+            ErrLib_SetParameter(ERRLIB_OUTPUT_CUSTOM, (UINT_PTR)FALSE);
+                        
+            WCHAR* match = wcsstr(buf, L"Exception 0xb: Test_Cpp_CustomLogTarget");
+            Assert::IsTrue(match != NULL);
         }
     };
 }
