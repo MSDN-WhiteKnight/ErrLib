@@ -166,7 +166,7 @@ namespace ErrLib_Tests
             int code=0;
             void* data=nullptr;
             WCHAR mes[BUFFER_SIZE]=L"";
-            WCHAR stack[BUFFER_SIZE]=L"";
+            WCHAR stack[ErrLib_StackLen]=L"";
             WCHAR* match;
             std::wstring stackStr;
 
@@ -177,7 +177,7 @@ namespace ErrLib_Tests
                 code = e.GetCode();
                 data = e.GetData();
                 e.GetMessageText(mes, BUFFER_SIZE);
-                e.PrintStackTrace(stack, BUFFER_SIZE);
+                e.PrintStackTrace(stack, ErrLib_StackLen);
                 stackStr = e.PrintStackTrace();
 
                 Assert::AreEqual<std::wstring>(L"Error occured",e.GetMsg());
