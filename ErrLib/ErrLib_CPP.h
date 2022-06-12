@@ -7,6 +7,7 @@
 
 const DWORD ERRLIB_CPP_EXCEPTION = 0xC0400002;
 
+#ifdef __cplusplus
 namespace ErrLib{
 
 class Exception : public std::exception{
@@ -66,4 +67,5 @@ public:
 };
 
 }
+#endif //__cplusplus
 #endif
