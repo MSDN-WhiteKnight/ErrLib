@@ -3,6 +3,7 @@
 #include <string.h>
 #include "CppUnitTest.h"
 #include "ErrLib.h"
+#include "ErrLib_CPP.h"
 #include "vcdefs.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -22,6 +23,14 @@ void func1(){
 
 void func(){
 	func1();
+}
+
+void cpp_func1(){
+    throw ErrLib::Exception(L"Error occured", 123, nullptr);
+}
+
+void cpp_func(){
+    cpp_func1();
 }
 
 const WCHAR logname[] = L"errlib.log";
@@ -155,6 +164,45 @@ namespace ErrLib_Tests
                         
             WCHAR* match = wcsstr(buf, L"Exception 0xa: Test_CustomTarget_LogExceptionInfo");
             Assert::IsTrue(match != NULL);
+        }
+
+        TEST_METHOD(Test_Cpp_Catch) 
+        {
+            int code=0;
+            void* data=nullptr;
+            WCHAR mes[BUFFER_SIZE]=L"";
+            WCHAR stack[BUFFER_SIZE]=L"";
+            WCHAR* match;
+
+            try {
+                cpp_func();
+            }
+            catch(ErrLib::Exception& e) {
+                code = e.GetCode();
+                data = e.GetData();
+                e.GetMessageText(mes, BUFFER_SIZE);
+                CONTEXT ctx;
+                e.GetContext(&ctx);
+                ErrLib_PrintStack(&ctx, stack, BUFFER_SIZE);
+            }
+
+            Assert::AreEqual(123, code);
+            Assert::AreEqual((UINT_PTR)nullptr, (UINT_PTR)data);
+            Assert::AreEqual(L"Error occured", mes);
+            
+            // Stack trace
+            Assert::IsTrue(wcslen(stack)>20);
+
+            if(DEBUG_BUILD){
+                match = wcsstr(stack,L"ErrLib_Tests.dll!cpp_func1");
+                Assert::IsTrue(match!=NULL);
+            
+                match = wcsstr(stack,L"ErrLib_Tests.dll!ErrLib_Tests::Tests::Test_Cpp_Catch");
+                Assert::IsTrue(match!=NULL);            
+
+                match = wcsstr(stack,L"tests.cpp;");
+                Assert::IsTrue(match!=NULL);
+            }
         }
     };
 }

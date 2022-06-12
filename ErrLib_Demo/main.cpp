@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "ErrLib.h"
+#include "ErrLib_CPP.h"
 
 /********************************************************************************/
 
@@ -37,6 +38,25 @@ void threadFunction(void *param)
     }
 }
 
+void ErrLibCppDemo(){
+    try{
+        func();
+    }
+    catch(ErrLib::Exception& e){
+        WCHAR buf[1024]=L"";
+        fputws(L"ErrLib::Exception\r\n", stdout);
+
+        e.GetMessageText(buf,1024);
+        fputws(buf, stdout);
+        fputws(L"\r\n", stdout);
+
+        CONTEXT ctx;
+        e.GetContext(&ctx);
+        ErrLib_PrintStack(&ctx, buf, 1024);
+        fputws(buf, stdout);
+    }
+}
+
 int main()
 {		
     DWORD_PTR p;
@@ -46,7 +66,7 @@ int main()
     printf("0x%llx\n",(ULONGLONG)p);
 
     _beginthread(threadFunction, 0, NULL);
- 
+
     getchar();
     return 0;
 }
