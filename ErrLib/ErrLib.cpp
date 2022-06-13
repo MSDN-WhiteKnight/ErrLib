@@ -126,6 +126,21 @@ ERRLIB_API void __stdcall ErrLib_ErrorMes(LPTSTR lpszFunction,DWORD dw,WCHAR* bu
     LocalFree(lpDisplayBuf);
 }
 
+ERRLIB_API DWORD __stdcall ErrLib_GetWinapiErrorMessage(DWORD dwCode, BOOL localized, WCHAR* pOutput, int cch) 
+{ 
+    // Retrieve the system error message for the specified Win32 error code
+
+    if(pOutput == NULL) return 0;
+
+    DWORD dwLangID;
+    StringCchCopy(pOutput, cch, L"");
+
+    if(localized != FALSE) dwLangID = LANG_USER_DEFAULT;
+    else dwLangID = MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US);
+
+    return FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dwCode, dwLangID, pOutput, cch, NULL );
+}
+
 ERRLIB_API void __stdcall ErrLib_PrintError(LPTSTR lpszFunction,DWORD dw){
     WCHAR buf[1024]={0};
     ErrLib_ErrorMes(lpszFunction,dw,buf);

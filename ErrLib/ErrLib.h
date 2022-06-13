@@ -131,6 +131,8 @@ extern "C" {
  */
 ERRLIB_API void __stdcall ErrLib_ErrorMes(LPTSTR lpszFunction,DWORD dw,WCHAR* buf);
 
+ERRLIB_API DWORD __stdcall ErrLib_GetWinapiErrorMessage(DWORD dwCode, BOOL localized, WCHAR* pOutput, int cch);
+
 //Gets filename from full path
 ERRLIB_API WCHAR* __stdcall ErrLib_FileNameFromPathW(WCHAR* path);
 

@@ -43,6 +43,23 @@ public:
     Exception(const std::wstring& message, DWORD code, void* data):_msg(message),_code(code),_data(data){
         RtlCaptureContext(&_context);
     }
+
+    /**
+     * Creates a new exception using the error code and message from the last WINAPI error
+     * @param localized The value indicating whether the exception message should use the current OS locale
+     * If the **localized** parameter is `true`, the message is in language of the current OS locale. Otherwise, it is always in English.
+     */
+    static Exception FromLastWinapiError(bool localized){
+        DWORD code = GetLastError();
+        BOOL fLocalized;
+        WCHAR buf[ErrLib_MessageLen]=L"";
+
+        if(localized) fLocalized = TRUE;
+        else fLocalized = FALSE;
+        
+        ErrLib_GetWinapiErrorMessage(code, fLocalized, buf, ErrLib_MessageLen);
+        return Exception(buf, code, nullptr);
+    }
     
     /**
      * Gets the error message associated with this exception as a C++ wstring

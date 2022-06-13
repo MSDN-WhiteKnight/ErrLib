@@ -168,6 +168,19 @@ namespace ErrLib_Tests
             Assert::IsTrue(match != NULL);
         }
 
+        TEST_METHOD(Test_GetWinapiErrorMessage){
+            WCHAR buf[BUFFER_SIZE]=L"";
+            DWORD res = ErrLib_GetWinapiErrorMessage(2, FALSE, buf, BUFFER_SIZE);
+            
+            Assert::IsTrue(res>0);
+            Assert::AreEqual(L"The system cannot find the file specified.\r\n",buf);
+        }
+
+        TEST_METHOD(Test_GetWinapiErrorMessage_Null){
+            DWORD res = ErrLib_GetWinapiErrorMessage(2, FALSE, NULL, 0);
+            Assert::AreEqual<DWORD>(0,res);
+        }
+
         TEST_METHOD(Test_Cpp_Catch) 
         {
             int code=0;
@@ -253,6 +266,26 @@ namespace ErrLib_Tests
             WCHAR buf[ErrLib_MessageLen];
             exc.GetMessageText(buf,ErrLib_MessageLen);
             Assert::AreEqual(L"", buf);
+        }
+
+        TEST_METHOD(Test_Exception_FromLastWinapiError)
+        {
+            CloseHandle(NULL);
+            ErrLib::Exception exc=ErrLib::Exception::FromLastWinapiError(false);
+            
+            Assert::AreEqual<DWORD>(6, exc.GetCode());
+            Assert::AreEqual<std::wstring>(L"The handle is invalid.\r\n", exc.GetMsg());
+        }
+
+        TEST_METHOD(Test_Exception_FromLastWinapiError_Localized)
+        {
+            CloseHandle(NULL);
+            ErrLib::Exception exc=ErrLib::Exception::FromLastWinapiError(true);
+            
+            Assert::AreEqual<DWORD>(6, exc.GetCode());
+
+            // Just verify that it does not crash and returns non-empty string. The exact message depends on current language.
+            Assert::IsTrue(exc.GetMsg().length() > 0);
         }
     };
 }
