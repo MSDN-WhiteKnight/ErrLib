@@ -41,18 +41,25 @@ void WINAPI MyLoggingCallback(LPCWSTR pStr, void* pExtraInfo){
     wcscpy(buf, pStr);
 }
 
-void FileReadAllLines(const WCHAR* logname, WCHAR* pOutput){
+void FileReadAllLines(const WCHAR* logname, WCHAR* pOutput, int cch){
     //read content of log file
     WCHAR* p=NULL;
     WCHAR buf[BUFFER_SIZE]=L"";
     FILE* fp;
+    int n=0;
+    int len;
     fp = _wfopen(logname, L"rt");
-    wcscpy(pOutput,L"");
+    wcscpy_s(pOutput,cch,L"");
 
     while(true){
         p = fgetws(buf,BUFFER_SIZE,fp);
         if(p==NULL) break;
-        wcscat(pOutput,buf);
+
+        len = wcslen(buf);
+        if(n+len>=cch) break;
+
+        wcscat_s(pOutput,cch,buf);
+        n+=len;
     }
 
     fclose(fp);
@@ -114,7 +121,7 @@ namespace ErrLib_Tests
             ErrLib_LogMessage(L"Quick brown fox", FALSE, MSG_INFORMATION, FALSE);
 
             //read content of log file
-            FileReadAllLines(logname, text);
+            FileReadAllLines(logname, text, BUFFER_SIZE);
 
             //verify content
             match = wcsstr(text, L"Quick brown fox");
@@ -132,7 +139,7 @@ namespace ErrLib_Tests
             ErrLib_LogExceptionInfo(1,L"ErrLib test exception",L"",FALSE);
 
             //read content of log file
-            FileReadAllLines(logname, text);
+            FileReadAllLines(logname, text, BUFFER_SIZE);
 
             //verify content
             match = wcsstr(text, L"Exception 0x1: ErrLib test exception");
@@ -215,7 +222,7 @@ namespace ErrLib_Tests
             exc.Log(false);
 
             //read content of log file
-            FileReadAllLines(logname, text);
+            FileReadAllLines(logname, text, BUFFER_SIZE);
 
             //verify content
             match = wcsstr(text, L"Exception 0x1: ErrLib test exception");
@@ -234,6 +241,18 @@ namespace ErrLib_Tests
                         
             WCHAR* match = wcsstr(buf, L"Exception 0xb: Test_Cpp_CustomLogTarget");
             Assert::IsTrue(match != NULL);
+        }
+
+        TEST_METHOD(Test_Exception_DefaultParams)
+        {
+            ErrLib::Exception exc;
+            Assert::AreEqual(ERRLIB_CPP_EXCEPTION, exc.GetCode());
+            Assert::AreEqual<std::wstring>(L"", exc.GetMsg());
+            Assert::AreEqual<void*>(nullptr, exc.GetData());
+
+            WCHAR buf[ErrLib_MessageLen];
+            exc.GetMessageText(buf,ErrLib_MessageLen);
+            Assert::AreEqual(L"", buf);
         }
     };
 }
