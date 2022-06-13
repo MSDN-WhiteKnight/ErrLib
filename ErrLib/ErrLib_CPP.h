@@ -53,7 +53,7 @@ public:
      * Gets the error code associated with this exception
      * @note When error code was not specified when creating exception, the default value DWORD ERRLIB_CPP_EXCEPTION (0xC0400002) is used.
      */
-    int GetCode(){return _code;}
+    DWORD GetCode(){return _code;}
 
     /**
      * Gets the additional user-defined data associated with this exception
