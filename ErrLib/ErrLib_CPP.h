@@ -60,6 +60,17 @@ public:
         ErrLib_GetWinapiErrorMessage(code, fLocalized, buf, ErrLib_MessageLen);
         return Exception(buf, code, nullptr);
     }
+
+    /**
+     * Creates a new exception using the error code and message from the specified HRESULT
+     * @param hr HRESULT value that would be used as error code
+     */
+    static Exception FromHResult(HRESULT hr){
+        WCHAR buf[ErrLib_MessageLen]=L"";
+        
+        ErrLib_GetHResultMessage(hr, buf, ErrLib_MessageLen);
+        return Exception(buf, (DWORD)hr, nullptr);
+    }
     
     /**
      * Gets the error message associated with this exception as a C++ wstring

@@ -287,5 +287,16 @@ namespace ErrLib_Tests
             // Just verify that it does not crash and returns non-empty string. The exact message depends on current language.
             Assert::IsTrue(exc.GetMsg().length() > 0);
         }
+
+        TEST_METHOD(Test_Exception_FromHResult)
+        {
+            HRESULT hr = E_OUTOFMEMORY;
+            ErrLib::Exception exc=ErrLib::Exception::FromHResult(hr);
+            
+            Assert::AreEqual<DWORD>(E_OUTOFMEMORY, exc.GetCode());
+
+            // Just verify that it does not crash and returns non-empty string. The exact message depends on current language.
+            Assert::IsTrue(exc.GetMsg().length() > 0);
+        }
     };
 }

@@ -305,6 +305,7 @@ ERRLIB_API LPVOID __stdcall ErrLib_ExArgs_GetPointer();
 
 #ifdef __cplusplus
 ERRLIB_API void __stdcall ErrLib_HResultToString(HRESULT hr,LPTSTR lpszFunction,WCHAR* buf);
+ERRLIB_API void __stdcall ErrLib_GetHResultMessage(HRESULT hr,WCHAR* lpOutput, int cch);
 }//extern "C"
 #endif
 

@@ -157,6 +157,15 @@ ERRLIB_API void __stdcall ErrLib_HResultToString(HRESULT hr,LPTSTR lpszFunction,
     swprintf(buf,L"%s failed with HRESULT 0x%x. %s", 
         lpszFunction, (DWORD)hr, errMsg);         
 }
+
+ERRLIB_API void __stdcall ErrLib_GetHResultMessage(HRESULT hr,WCHAR* lpOutput, int cch) 
+{
+    if(lpOutput == NULL) return;
+
+    _com_error err(hr);
+    const WCHAR* errMsg = err.ErrorMessage();
+    StringCchCopy(lpOutput, cch, errMsg);
+}
 #endif
 
 //Sets current exception callback. Specify NULL to call default callback
