@@ -18,8 +18,15 @@ class Exception : public std::exception{
 private:
     CONTEXT _context;
     std::wstring _msg;
+    std::wstring _stack;
     DWORD _code;
     void* _data;
+
+    std::wstring PrintStackTraceImpl(){
+        WCHAR buf[ErrLib_StackLen]=L"";
+        ErrLib_PrintStack(&_context, buf, ErrLib_StackLen);
+        return std::wstring(buf);
+    }
 
 public:
 
@@ -28,6 +35,7 @@ public:
      */
     Exception():_msg(L""),_code(ERRLIB_CPP_EXCEPTION),_data(nullptr){
         RtlCaptureContext(&_context);
+        _stack = this->PrintStackTraceImpl();
     }
 
     /**
@@ -35,6 +43,7 @@ public:
      */
     Exception(const std::wstring& message):_msg(message),_code(ERRLIB_CPP_EXCEPTION),_data(nullptr){
         RtlCaptureContext(&_context);
+        _stack = this->PrintStackTraceImpl();
     }
 
     /**
@@ -42,6 +51,7 @@ public:
      */
     Exception(const std::wstring& message, DWORD code, void* data):_msg(message),_code(code),_data(data){
         RtlCaptureContext(&_context);
+        _stack = this->PrintStackTraceImpl();
     }
 
     /**
@@ -112,16 +122,15 @@ public:
      * @param cch The maximum amount of characters that can be put into the array pointed by **pOutput** parameter.
      */
     void PrintStackTrace(WCHAR* pOutput, int cch){
-        ErrLib_PrintStack(&_context, pOutput, cch);
+        const WCHAR* p = this->_stack.c_str();
+        StringCchCopy(pOutput, cch, p);
     }
 
     /**
      * Gets the stack trace in the moment this exception was thrown as a C++ wstring
      */
     std::wstring PrintStackTrace(){
-        WCHAR buf[ErrLib_StackLen]=L"";
-        this->PrintStackTrace(buf, ErrLib_StackLen);
-        return std::wstring(buf);
+        return _stack;
     }
 
     /**
