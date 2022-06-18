@@ -150,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ErrLib.h" />
+    <ClInclude Include="ErrLib_CPP.h" />
     <ClInclude Include="event.h" />
     <ClInclude Include="vcdefs.h" />
   </ItemGroup>

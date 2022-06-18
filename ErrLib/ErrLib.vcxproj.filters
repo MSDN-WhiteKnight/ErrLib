@@ -27,6 +27,9 @@
     <ClInclude Include="vcdefs.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="ErrLib_CPP.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ErrLib.cpp">

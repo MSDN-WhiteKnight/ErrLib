@@ -131,6 +131,8 @@ extern "C" {
  */
 ERRLIB_API void __stdcall ErrLib_ErrorMes(LPTSTR lpszFunction,DWORD dw,WCHAR* buf);
 
+ERRLIB_API DWORD __stdcall ErrLib_GetWinapiErrorMessage(DWORD dwCode, BOOL localized, WCHAR* pOutput, int cch);
+
 //Gets filename from full path
 ERRLIB_API WCHAR* __stdcall ErrLib_FileNameFromPathW(WCHAR* path);
 
@@ -303,6 +305,7 @@ ERRLIB_API LPVOID __stdcall ErrLib_ExArgs_GetPointer();
 
 #ifdef __cplusplus
 ERRLIB_API void __stdcall ErrLib_HResultToString(HRESULT hr,LPTSTR lpszFunction,WCHAR* buf);
+ERRLIB_API void __stdcall ErrLib_GetHResultMessage(HRESULT hr,WCHAR* lpOutput, int cch);
 }//extern "C"
 #endif
 
