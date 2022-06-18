@@ -342,7 +342,7 @@ namespace ErrLib_Tests
             Assert::AreEqual<std::wstring>(L"The handle is invalid.\r\n", exc.GetMsg());
         }
 
-        TEST_METHOD(Test_Exception_FromLastWinapiError_Localized)
+        TEST_METHOD(Test_WinapiException_FromLastError_Localized)
         {
             CloseHandle(NULL);
             ErrLib::WinapiException exc=ErrLib::WinapiException::FromLastError(true);
