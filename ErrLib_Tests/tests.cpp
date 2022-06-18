@@ -33,6 +33,14 @@ void cpp_func(){
     cpp_func1();
 }
 
+class MyException : public ErrLib::Exception{
+public: MyException(){this->SetMsg(L"Test exception subclass");}
+};
+
+void foo(){throw MyException();}
+
+void bar(){foo();}
+
 const WCHAR logname[] = L"errlib.log";
 const int BUFFER_SIZE = 5000;
 WCHAR buf[BUFFER_SIZE]=L"";
@@ -266,6 +274,63 @@ namespace ErrLib_Tests
             WCHAR buf[ErrLib_MessageLen];
             exc.GetMessageText(buf,ErrLib_MessageLen);
             Assert::AreEqual(L"", buf);
+        }
+
+        TEST_METHOD(Test_Exception_Derived)
+        {
+            MyException exc;
+            Assert::AreEqual(ERRLIB_CPP_EXCEPTION, exc.GetCode());
+            Assert::AreEqual<std::wstring>(L"Test exception subclass", exc.GetMsg());
+            Assert::AreEqual<void*>(nullptr, exc.GetData());
+
+            WCHAR buf[ErrLib_MessageLen];
+            exc.GetMessageText(buf,ErrLib_MessageLen);
+            Assert::AreEqual(L"Test exception subclass", buf);
+        }
+
+        TEST_METHOD(Test_Cpp_Catch_Derived) 
+        {
+            int code=0;
+            void* data=nullptr;
+            WCHAR mes[BUFFER_SIZE]=L"";
+            WCHAR stack[ErrLib_StackLen]=L"";
+            WCHAR* match;
+            std::wstring stackStr;
+
+            try {
+                bar();
+            }
+            catch(MyException& e) {
+                code = e.GetCode();
+                data = e.GetData();
+                e.GetMessageText(mes, BUFFER_SIZE);
+                e.PrintStackTrace(stack, ErrLib_StackLen);
+                stackStr = e.PrintStackTrace();
+
+                Assert::AreEqual<std::wstring>(L"Test exception subclass",e.GetMsg());
+            }
+
+            Assert::AreEqual<DWORD>(ERRLIB_CPP_EXCEPTION, code);
+            Assert::AreEqual((UINT_PTR)nullptr, (UINT_PTR)data);
+            Assert::AreEqual(L"Test exception subclass", mes);
+            
+            // Stack trace
+            Assert::IsTrue(wcslen(stack)>20);
+            Assert::AreEqual<std::wstring>(stackStr,stack);
+
+            if(DEBUG_BUILD){
+                match = wcsstr(stack,L"ErrLib_Tests.dll!foo");
+                Assert::IsTrue(match!=NULL);
+
+                match = wcsstr(stack,L"ErrLib_Tests.dll!bar");
+                Assert::IsTrue(match!=NULL);
+            
+                match = wcsstr(stack,L"ErrLib_Tests.dll!ErrLib_Tests::Tests::Test_Cpp_Catch_Derived");
+                Assert::IsTrue(match!=NULL);            
+
+                match = wcsstr(stack,L"tests.cpp;");
+                Assert::IsTrue(match!=NULL);
+            }
         }
 
         TEST_METHOD(Test_Exception_FromLastWinapiError)
