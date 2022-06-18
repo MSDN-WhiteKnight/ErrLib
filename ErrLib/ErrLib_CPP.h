@@ -11,8 +11,8 @@ const DWORD ERRLIB_CPP_EXCEPTION = 0xC0400002;
 namespace ErrLib{
 
 /**
- * Provides a C++ exception that supports capturing a stack trace in the moment when exception is thrown and logging the exception information. 
- * @note Only use this class directly. Using classes derived from this one is not supported.
+ * Provides a base class for C++ exceptions that supports capturing a stack trace in the moment when exception 
+ * is thrown and logging the exception information. 
  */
 class Exception : public std::exception{
 private:
@@ -27,6 +27,14 @@ private:
         ErrLib_PrintStack(&_context, buf, ErrLib_StackLen);
         return std::wstring(buf);
     }
+
+protected: 
+
+    void SetMsg(const std::wstring& msg){_msg=msg;}
+
+    void SetCode(DWORD code){_code=code;}
+
+    void SetData(void* data){_data=data;}
 
 public:
 
@@ -52,34 +60,6 @@ public:
     Exception(const std::wstring& message, DWORD code, void* data):_msg(message),_code(code),_data(data){
         RtlCaptureContext(&_context);
         _stack = this->PrintStackTraceImpl();
-    }
-
-    /**
-     * Creates a new exception using the error code and message from the last WINAPI error
-     * @param localized The value indicating whether the exception message should use the current OS locale
-     * If the **localized** parameter is `true`, the message is in language of the current OS locale. Otherwise, it is always in English.
-     */
-    static Exception FromLastWinapiError(bool localized){
-        DWORD code = GetLastError();
-        BOOL fLocalized;
-        WCHAR buf[ErrLib_MessageLen]=L"";
-
-        if(localized) fLocalized = TRUE;
-        else fLocalized = FALSE;
-        
-        ErrLib_GetWinapiErrorMessage(code, fLocalized, buf, ErrLib_MessageLen);
-        return Exception(buf, code, nullptr);
-    }
-
-    /**
-     * Creates a new exception using the error code and message from the specified HRESULT
-     * @param hr HRESULT value that would be used as error code
-     */
-    static Exception FromHResult(HRESULT hr){
-        WCHAR buf[ErrLib_MessageLen]=L"";
-        
-        ErrLib_GetHResultMessage(hr, buf, ErrLib_MessageLen);
-        return Exception(buf, (DWORD)hr, nullptr);
     }
     
     /**
@@ -148,6 +128,50 @@ public:
         else bVisible = FALSE;
 
         ErrLib_LogExceptionInfo(_code, _msg.c_str(), this->PrintStackTrace().c_str(), bVisible);
+    }
+};
+
+class WinapiException : public Exception{
+public: 
+    WinapiException(DWORD code,const std::wstring& msg){
+        this->SetCode(code);
+        this->SetMsg(msg);
+    }
+
+    /**
+     * Creates a new WinapiException using the error code and message from the last WINAPI error
+     * @param localized The value indicating whether the exception message should use the current OS locale
+     * If the **localized** parameter is `true`, the message is in language of the current OS locale. Otherwise, it is always in English.
+     */
+    static WinapiException FromLastError(bool localized){
+        DWORD code = GetLastError();
+        BOOL fLocalized;
+        WCHAR buf[ErrLib_MessageLen]=L"";
+
+        if(localized) fLocalized = TRUE;
+        else fLocalized = FALSE;
+        
+        ErrLib_GetWinapiErrorMessage(code, fLocalized, buf, ErrLib_MessageLen);
+        return WinapiException(code, buf);
+    }
+};
+
+class ComException : public Exception{
+public: 
+    ComException(HRESULT hr,const std::wstring& msg){
+        this->SetCode((DWORD)hr);
+        this->SetMsg(msg);
+    }
+
+    /**
+     * Creates a new ComException using the error code and message from the specified HRESULT
+     * @param hr HRESULT value that would be used as error code
+     */
+    static ComException FromHResult(HRESULT hr){
+        WCHAR buf[ErrLib_MessageLen]=L"";
+        
+        ErrLib_GetHResultMessage(hr, buf, ErrLib_MessageLen);
+        return ComException(hr, buf);
     }
 };
 

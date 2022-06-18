@@ -271,7 +271,7 @@ namespace ErrLib_Tests
         TEST_METHOD(Test_Exception_FromLastWinapiError)
         {
             CloseHandle(NULL);
-            ErrLib::Exception exc=ErrLib::Exception::FromLastWinapiError(false);
+            ErrLib::WinapiException exc=ErrLib::WinapiException::FromLastError(false);
             
             Assert::AreEqual<DWORD>(6, exc.GetCode());
             Assert::AreEqual<std::wstring>(L"The handle is invalid.\r\n", exc.GetMsg());
@@ -280,7 +280,7 @@ namespace ErrLib_Tests
         TEST_METHOD(Test_Exception_FromLastWinapiError_Localized)
         {
             CloseHandle(NULL);
-            ErrLib::Exception exc=ErrLib::Exception::FromLastWinapiError(true);
+            ErrLib::WinapiException exc=ErrLib::WinapiException::FromLastError(true);
             
             Assert::AreEqual<DWORD>(6, exc.GetCode());
 
@@ -291,7 +291,7 @@ namespace ErrLib_Tests
         TEST_METHOD(Test_Exception_FromHResult)
         {
             HRESULT hr = E_OUTOFMEMORY;
-            ErrLib::Exception exc=ErrLib::Exception::FromHResult(hr);
+            ErrLib::ComException exc=ErrLib::ComException::FromHResult(hr);
             
             Assert::AreEqual<DWORD>(E_OUTOFMEMORY, exc.GetCode());
 
