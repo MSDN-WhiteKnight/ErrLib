@@ -333,7 +333,7 @@ namespace ErrLib_Tests
             }
         }
 
-        TEST_METHOD(Test_Exception_FromLastWinapiError)
+        TEST_METHOD(Test_WinapiException_FromLastError)
         {
             CloseHandle(NULL);
             ErrLib::WinapiException exc=ErrLib::WinapiException::FromLastError(false);
