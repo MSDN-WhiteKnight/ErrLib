@@ -9,6 +9,7 @@
 #define ErrLib_H_INCLUDED
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include <windows.h>
 #include <strsafe.h>
@@ -104,6 +105,22 @@ typedef LONG  (WINAPI * ERRLIB_EXCEPTION_CALLBACK) ( struct _EXCEPTION_POINTERS 
 
 //Function pointer type used for custom logging targets
 typedef void (WINAPI * ERRLIB_LOGGING_CALLBACK) (LPCWSTR, void*);
+
+typedef struct structERRLIB_STACK_FRAME{
+    uint64_t addr;
+    uint64_t displacement;
+    WCHAR symbol[MAX_SYM_NAME];
+    WCHAR module[MAX_PATH];
+    WCHAR src_file[MAX_PATH];
+    DWORD src_line;
+} ERRLIB_STACK_FRAME;
+
+typedef struct structERRLIB_STACK_TRACE{
+    ERRLIB_STACK_FRAME *data;
+    int capacity;
+    int count;
+    BOOL isOnHeap;
+} ERRLIB_STACK_TRACE;
 
 // *** Custom exception codes for SEH *** 
 
@@ -221,6 +238,8 @@ ERRLIB_API BOOL __stdcall ErrLib_RegisterEventSource();
  * Therefore, do not call this function on every application exit; instead only do so when its events are no longer needed (i.e., when application is uninstalled).
  */
 ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource();
+
+ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_GetStackTrace(CONTEXT* ctx);
 
 /**
  * Prints stack trace for the specified context record
