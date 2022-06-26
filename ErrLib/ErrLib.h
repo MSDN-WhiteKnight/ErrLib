@@ -241,6 +241,8 @@ ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource();
 
 ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_GetStackTrace(CONTEXT* ctx);
 
+ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack);
+
 /**
  * Prints stack trace for the specified context record
  * 

@@ -438,7 +438,7 @@ void StackTrace_Realloc(ERRLIB_STACK_TRACE* pStack, int newCapacity){
     pStack->isOnHeap = TRUE;
 }
 
-void StackTrace_Free(ERRLIB_STACK_TRACE* pStack){
+ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack){
     
     if(pStack->data != NULL && pStack->isOnHeap != FALSE){
         free(pStack->data);        
@@ -455,6 +455,25 @@ void StackTrace_AddFrame(ERRLIB_STACK_TRACE* pStack,const ERRLIB_STACK_FRAME* pF
 
     pStack->data[pStack->count] = *pFrame;
     pStack->count++;
+}
+
+ERRLIB_STACK_TRACE StackTrace_Copy(const ERRLIB_STACK_TRACE* pInput){
+    ERRLIB_STACK_TRACE output;
+    int newCapacity = pInput->count;
+
+    if(newCapacity<10) newCapacity=10;
+
+    ERRLIB_STACK_FRAME* pNewData = (ERRLIB_STACK_FRAME*)malloc(newCapacity * sizeof(ERRLIB_STACK_FRAME));
+
+    if(pInput->data != NULL && pInput->count>0){
+        memcpy_s(pNewData, newCapacity * sizeof(ERRLIB_STACK_FRAME), pInput->data, pInput->count);
+    }
+
+    output.capacity = newCapacity;
+    output.count = pInput->count;
+    output.data = pNewData;
+    output.isOnHeap = TRUE;
+    return output;
 }
 
 void ErrLib_GetStackTraceImpl(CONTEXT* ctx, ERRLIB_STACK_TRACE* pOutput) 
