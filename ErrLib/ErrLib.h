@@ -241,6 +241,10 @@ ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource();
 
 ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_GetStackTrace(CONTEXT* ctx);
 
+ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount(const ERRLIB_STACK_TRACE* pStack);
+
+ERRLIB_API BOOL  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n, ERRLIB_STACK_FRAME* pOutput);
+
 ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack);
 
 /**

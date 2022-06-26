@@ -391,24 +391,27 @@ namespace ErrLib_Tests
 
         TEST_METHOD(Test_GetStackTrace){            
             ERRLIB_STACK_TRACE stackTrace = StackTraceTestFunc();
+            ERRLIB_STACK_FRAME firstFrame;
+            BOOL res = ErrLib_ST_GetFrame(&stackTrace, 0, &firstFrame);
             
-            Assert::IsTrue(stackTrace.count > 1);
+            Assert::IsTrue(res != FALSE);
+            Assert::IsTrue(ErrLib_ST_GetFramesCount(&stackTrace) > 1);
             Assert::IsTrue(stackTrace.capacity > stackTrace.count);
             Assert::IsTrue(stackTrace.isOnHeap != FALSE);
             Assert::IsTrue(stackTrace.data != NULL);
-            Assert::IsTrue(stackTrace.data[0].addr != 0x0);
+            Assert::IsTrue(firstFrame.addr != 0x0);
 
             if(DEBUG_BUILD){
                 // x86 stack trace does not contain the direct caller for some reason, so we assert
                 // on the second frame to cover both cases
                 Assert_ContainsSymbol(&stackTrace, L"ErrLib_Tests::Tests::Test_GetStackTrace");
 
-                Assert_Contains(stackTrace.data[0].module, L"ErrLib_Tests.dll");
-                Assert_Contains(stackTrace.data[0].src_file, L"tests.cpp");
+                Assert_Contains(firstFrame.module, L"ErrLib_Tests.dll");
+                Assert_Contains(firstFrame.src_file, L"tests.cpp");
             }
 
             ErrLib_FreeStackTrace(&stackTrace);
-            Assert::AreEqual(0, stackTrace.count);
+            Assert::AreEqual(0, ErrLib_ST_GetFramesCount(&stackTrace));
             Assert::AreEqual(0, stackTrace.capacity);
             Assert::AreEqual<void*>(NULL, stackTrace.data);
         }

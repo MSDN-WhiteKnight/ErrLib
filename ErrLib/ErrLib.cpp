@@ -438,6 +438,18 @@ void StackTrace_Realloc(ERRLIB_STACK_TRACE* pStack, int newCapacity){
     pStack->isOnHeap = TRUE;
 }
 
+ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount(const ERRLIB_STACK_TRACE* pStack){
+    if(pStack==NULL) return 0;
+    return pStack->count;
+}
+
+ERRLIB_API BOOL  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n, ERRLIB_STACK_FRAME* pOutput){
+    if(pStack==NULL) return FALSE;
+    if(n<0 || n>= pStack->count) return FALSE;
+    memcpy_s(pOutput, sizeof(ERRLIB_STACK_FRAME), &(pStack->data[n]), sizeof(ERRLIB_STACK_FRAME));
+    return TRUE;
+}
+
 ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack){
     
     if(pStack->data != NULL && pStack->isOnHeap != FALSE){
@@ -459,11 +471,12 @@ void StackTrace_AddFrame(ERRLIB_STACK_TRACE* pStack,const ERRLIB_STACK_FRAME* pF
 
 ERRLIB_STACK_TRACE StackTrace_Copy(const ERRLIB_STACK_TRACE* pInput){
     ERRLIB_STACK_TRACE output;
+    ERRLIB_STACK_FRAME* pNewData = NULL;
     int newCapacity = pInput->count;
 
     if(newCapacity<10) newCapacity=10;
 
-    ERRLIB_STACK_FRAME* pNewData = (ERRLIB_STACK_FRAME*)malloc(newCapacity * sizeof(ERRLIB_STACK_FRAME));
+    pNewData = (ERRLIB_STACK_FRAME*)malloc(newCapacity * sizeof(ERRLIB_STACK_FRAME));
 
     if(pInput->data != NULL && pInput->count>0){
         memcpy_s(pNewData, newCapacity * sizeof(ERRLIB_STACK_FRAME), pInput->data, pInput->count);
@@ -495,6 +508,8 @@ void ErrLib_GetStackTraceImpl(CONTEXT* ctx, ERRLIB_STACK_TRACE* pOutput)
     ERRLIB_STACK_FRAME stackFrame;
 
     PSYMBOL_INFOW pSymbol = (PSYMBOL_INFOW)buffer;
+    BOOL symbolFound = FALSE;
+    BOOL lineinfoFound = FALSE;
 
     // Context record could be modified by StackWalk64, which causes crashes on x64 when the context comes from the
     // SEH exception information. So we create a copy here to prevent it.
@@ -550,7 +565,7 @@ void ErrLib_GetStackTraceImpl(CONTEXT* ctx, ERRLIB_STACK_TRACE* pOutput)
         ZeroMemory(buffer,sizeof(buffer));
         pSymbol->SizeOfStruct = sizeof(SYMBOL_INFOW);
         pSymbol->MaxNameLen = MAX_SYM_NAME;
-        BOOL symbolFound = SymFromAddrW(process, ( ULONG64 )stack.AddrPC.Offset, &displacement, pSymbol);
+        symbolFound = SymFromAddrW(process, (ULONG64)stack.AddrPC.Offset, &displacement, pSymbol);
 
         if(symbolFound == FALSE){ //name not available, output address instead
             StringCchPrintf(pSymbol->Name,MAX_SYM_NAME,L"0x%llx",(DWORD64)stack.AddrPC.Offset);
@@ -577,7 +592,7 @@ void ErrLib_GetStackTraceImpl(CONTEXT* ctx, ERRLIB_STACK_TRACE* pOutput)
         }
 
         //try to get line
-        BOOL lineinfoFound = FALSE;
+        lineinfoFound = FALSE;
 
         if (symbolFound != FALSE) {
             // Only try to find line info when symbol is found - fixes crash when Win7 DbgHelp reads PDB symbols 
