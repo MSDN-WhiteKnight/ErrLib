@@ -87,9 +87,15 @@ void Assert_Contains(const WCHAR* str, const WCHAR* substr){
 
 void Assert_ContainsSymbol(const ERRLIB_STACK_TRACE* pStack, const WCHAR* symbol){
     bool found = false;
+    WCHAR frameSymbol[MAX_SYM_NAME]=L"";
+    ERRLIB_STACK_FRAME frame;
 
-    for(int i=0;i<pStack->count;i++){
-        if(wcscmp(pStack->data[i].symbol, symbol) == 0) {
+    for(int i=0;i<ErrLib_ST_GetFramesCount(pStack);i++){
+        
+        ErrLib_ST_GetFrame(pStack,i,&frame);
+        ErrLib_ST_GetSymName(&frame, frameSymbol, MAX_SYM_NAME);
+
+        if(wcscmp(frameSymbol, symbol) == 0) {
             found = true;
             break;
         }
@@ -389,9 +395,11 @@ namespace ErrLib_Tests
             Assert::IsTrue(exc.GetMsg().length() > 0);
         }
 
-        TEST_METHOD(Test_GetStackTrace){            
+        TEST_METHOD(Test_GetStackTrace){
             ERRLIB_STACK_TRACE stackTrace = StackTraceTestFunc();
             ERRLIB_STACK_FRAME firstFrame;
+            WCHAR buf[MAX_PATH]=L"";
+            int nChars;
             BOOL res = ErrLib_ST_GetFrame(&stackTrace, 0, &firstFrame);
             
             Assert::IsTrue(res != FALSE);
@@ -399,21 +407,63 @@ namespace ErrLib_Tests
             Assert::IsTrue(stackTrace.capacity > stackTrace.count);
             Assert::IsTrue(stackTrace.isOnHeap != FALSE);
             Assert::IsTrue(stackTrace.data != NULL);
-            Assert::IsTrue(firstFrame.addr != 0x0);
+            Assert::IsTrue(ErrLib_ST_GetAddress(&firstFrame) != 0x0);
 
             if(DEBUG_BUILD){
                 // x86 stack trace does not contain the direct caller for some reason, so we assert
                 // on the second frame to cover both cases
                 Assert_ContainsSymbol(&stackTrace, L"ErrLib_Tests::Tests::Test_GetStackTrace");
 
-                Assert_Contains(firstFrame.module, L"ErrLib_Tests.dll");
-                Assert_Contains(firstFrame.src_file, L"tests.cpp");
+                nChars = ErrLib_ST_GetSymModule(&firstFrame, buf, MAX_PATH);
+                Assert_Contains(buf, L"ErrLib_Tests.dll");
+                Assert::AreEqual<int>(wcslen(buf), nChars);
+
+                nChars = ErrLib_ST_GetSymSource(&firstFrame, buf, MAX_PATH);
+                Assert_Contains(buf, L"tests.cpp");
+                Assert::AreEqual<int>(wcslen(buf), nChars);
             }
 
             ErrLib_FreeStackTrace(&stackTrace);
             Assert::AreEqual(0, ErrLib_ST_GetFramesCount(&stackTrace));
             Assert::AreEqual(0, stackTrace.capacity);
             Assert::AreEqual<void*>(NULL, stackTrace.data);
+        }
+
+        TEST_METHOD(Test_StackFrame){
+            ERRLIB_STACK_FRAME frame;
+            WCHAR buf[MAX_SYM_NAME]=L"";
+            int nChars=0;
+
+            const WCHAR* ExampleSymbol = L"ExampleSymbolName";
+            const WCHAR* ExampleModule = L"module.dll";
+            const WCHAR* ExampleSource = L"example.cpp";
+
+            StringCchCopy(frame.symbol, MAX_SYM_NAME, ExampleSymbol);
+            StringCchCopy(frame.module, MAX_PATH, ExampleModule);
+            StringCchCopy(frame.src_file, MAX_PATH, ExampleSource);
+
+            //buffer is too short
+            nChars = ErrLib_ST_GetSymName(&frame, buf, 3);
+            Assert::AreEqual<int>(wcslen(ExampleSymbol), nChars);
+
+            nChars = ErrLib_ST_GetSymModule(&frame, buf, 1);
+            Assert::AreEqual<int>(wcslen(ExampleModule), nChars);
+
+            nChars = ErrLib_ST_GetSymSource(&frame, buf, 2);
+            Assert::AreEqual<int>(wcslen(ExampleSource), nChars);
+
+            //buffer is long enough
+            nChars = ErrLib_ST_GetSymName(&frame, buf, MAX_SYM_NAME);
+            Assert::AreEqual<int>(wcslen(ExampleSymbol), nChars);
+            Assert::AreEqual(ExampleSymbol, buf);
+
+            nChars = ErrLib_ST_GetSymModule(&frame, buf, MAX_SYM_NAME);
+            Assert::AreEqual<int>(wcslen(ExampleModule), nChars);
+            Assert::AreEqual(ExampleModule, buf);
+
+            nChars = ErrLib_ST_GetSymSource(&frame, buf, MAX_SYM_NAME);
+            Assert::AreEqual<int>(wcslen(ExampleSource), nChars);
+            Assert::AreEqual(ExampleSource, buf);
         }
     };
 }

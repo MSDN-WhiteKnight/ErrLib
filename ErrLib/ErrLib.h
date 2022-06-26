@@ -245,6 +245,18 @@ ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount(const ERRLIB_STACK_TRACE* pSta
 
 ERRLIB_API BOOL  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n, ERRLIB_STACK_FRAME* pOutput);
 
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress(const ERRLIB_STACK_FRAME* pFrame);
+
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME* pFrame);
+
+ERRLIB_API int __stdcall ErrLib_ST_GetSymName(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch);
+
+ERRLIB_API int __stdcall ErrLib_ST_GetSymModule(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch);
+
+ERRLIB_API int __stdcall ErrLib_ST_GetSymSource(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch);
+
+ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame);
+
 ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack);
 
 /**

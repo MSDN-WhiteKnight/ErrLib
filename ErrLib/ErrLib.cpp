@@ -450,6 +450,60 @@ ERRLIB_API BOOL  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, 
     return TRUE;
 }
 
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress(const ERRLIB_STACK_FRAME* pFrame){
+    if(pFrame == NULL) return 0x0;
+    return pFrame->addr;
+}
+
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME* pFrame){
+    if(pFrame == NULL) return 0x0;
+    return pFrame->displacement;
+}
+
+ERRLIB_API int __stdcall ErrLib_ST_GetSymName(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch){
+    int ret;
+
+    if(pFrame == NULL) return 0;
+    
+    ret = wcslen(pFrame->symbol);
+
+    if(cch==0 || pOutput == NULL) return ret;
+
+    StringCchCopy(pOutput, cch, pFrame->symbol);
+    return ret;
+}
+
+ERRLIB_API int __stdcall ErrLib_ST_GetSymModule(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch){
+    int ret;
+
+    if(pFrame == NULL) return 0;
+    
+    ret = wcslen(pFrame->module);
+
+    if(cch==0 || pOutput == NULL) return ret;
+
+    StringCchCopy(pOutput, cch, pFrame->module);
+    return ret;
+}
+
+ERRLIB_API int __stdcall ErrLib_ST_GetSymSource(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch){
+    int ret;
+
+    if(pFrame == NULL) return 0;
+    
+    ret = wcslen(pFrame->src_file);
+
+    if(cch==0 || pOutput == NULL) return ret;
+
+    StringCchCopy(pOutput, cch, pFrame->src_file);
+    return ret;
+}
+
+ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame){
+    if(pFrame == NULL) return 0;
+    return pFrame->src_line;
+}
+
 ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack){
     
     if(pStack->data != NULL && pStack->isOnHeap != FALSE){
