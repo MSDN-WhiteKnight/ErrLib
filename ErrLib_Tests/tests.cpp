@@ -41,6 +41,13 @@ void foo(){throw MyException();}
 
 void bar(){foo();}
 
+ERRLIB_STACK_TRACE StackTraceTestFunc(){
+    CONTEXT ctx;
+    RtlCaptureContext(&ctx);
+    ERRLIB_STACK_TRACE stackTrace = ErrLib_GetStackTrace(&ctx);
+    return stackTrace;
+}
+
 const WCHAR logname[] = L"errlib.log";
 const int BUFFER_SIZE = 5000;
 WCHAR buf[BUFFER_SIZE]=L"";
@@ -71,6 +78,24 @@ void FileReadAllLines(const WCHAR* logname, WCHAR* pOutput, int cch){
     }
 
     fclose(fp);
+}
+
+void Assert_Contains(const WCHAR* str, const WCHAR* substr){
+    const WCHAR* match = wcsstr(str, substr);
+    Assert::IsTrue(match != NULL);
+}
+
+void Assert_ContainsSymbol(const ERRLIB_STACK_TRACE* pStack, const WCHAR* symbol){
+    bool found = false;
+
+    for(int i=0;i<pStack->count;i++){
+        if(wcscmp(pStack->data[i].symbol, symbol) == 0) {
+            found = true;
+            break;
+        }
+    }
+
+    Assert::IsTrue(found);
 }
 
 namespace ErrLib_Tests
@@ -362,6 +387,30 @@ namespace ErrLib_Tests
 
             // Just verify that it does not crash and returns non-empty string. The exact message depends on current language.
             Assert::IsTrue(exc.GetMsg().length() > 0);
+        }
+
+        TEST_METHOD(Test_GetStackTrace){            
+            ERRLIB_STACK_TRACE stackTrace = StackTraceTestFunc();
+            
+            Assert::IsTrue(stackTrace.count > 1);
+            Assert::IsTrue(stackTrace.capacity > stackTrace.count);
+            Assert::IsTrue(stackTrace.isOnHeap != FALSE);
+            Assert::IsTrue(stackTrace.data != NULL);
+            Assert::IsTrue(stackTrace.data[0].addr != 0x0);
+
+            if(DEBUG_BUILD){
+                // x86 stack trace does not contain the direct caller for some reason, so we assert
+                // on the second frame to cover both cases
+                Assert_ContainsSymbol(&stackTrace, L"ErrLib_Tests::Tests::Test_GetStackTrace");
+
+                Assert_Contains(stackTrace.data[0].module, L"ErrLib_Tests.dll");
+                Assert_Contains(stackTrace.data[0].src_file, L"tests.cpp");
+            }
+
+            ErrLib_FreeStackTrace(&stackTrace);
+            Assert::AreEqual(0, stackTrace.count);
+            Assert::AreEqual(0, stackTrace.capacity);
+            Assert::AreEqual<void*>(NULL, stackTrace.data);
         }
     };
 }
