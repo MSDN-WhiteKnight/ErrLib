@@ -98,6 +98,10 @@
 #define ERRLIB_PARAM_VISUALCPPVERSION 100
 #define ERRLIB_PARAM_ISDEBUGBUILD 101
 
+#define ERRLIB_SYMBOL_NAME   1
+#define ERRLIB_SYMBOL_MODULE 2
+#define ERRLIB_SYMBOL_SOURCE 3
+
 // *** Typedefs *** 
 
 //Function pointer type used as unhandled exception callback
@@ -249,11 +253,7 @@ ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress(const ERRLIB_STACK_FRAME* pFr
 
 ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME* pFrame);
 
-ERRLIB_API int __stdcall ErrLib_ST_GetSymName(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch);
-
-ERRLIB_API int __stdcall ErrLib_ST_GetSymModule(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch);
-
-ERRLIB_API int __stdcall ErrLib_ST_GetSymSource(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch);
+ERRLIB_API int __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId, WCHAR* pOutput, int cch);
 
 ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame);
 

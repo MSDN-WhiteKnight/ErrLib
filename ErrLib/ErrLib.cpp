@@ -460,43 +460,32 @@ ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME
     return pFrame->displacement;
 }
 
-ERRLIB_API int __stdcall ErrLib_ST_GetSymName(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch){
-    int ret;
-
-    if(pFrame == NULL) return 0;
-    
-    ret = wcslen(pFrame->symbol);
-
-    if(cch==0 || pOutput == NULL) return ret;
-
-    StringCchCopy(pOutput, cch, pFrame->symbol);
-    return ret;
+const WCHAR* StackFrameGetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId){
+    switch(propId){
+        case ERRLIB_SYMBOL_NAME:   return pFrame->symbol;
+        case ERRLIB_SYMBOL_MODULE: return pFrame->module;
+        case ERRLIB_SYMBOL_SOURCE: return pFrame->src_file;
+        default: return NULL;
+    }
 }
 
-ERRLIB_API int __stdcall ErrLib_ST_GetSymModule(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch){
-    int ret;
+ERRLIB_API int __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId, WCHAR* pOutput, int cch){
+    const WCHAR* pStr = NULL;
+    int size = 0;
 
     if(pFrame == NULL) return 0;
-    
-    ret = wcslen(pFrame->module);
 
-    if(cch==0 || pOutput == NULL) return ret;
+    pStr = StackFrameGetStringProperty(pFrame, propId);
 
-    StringCchCopy(pOutput, cch, pFrame->module);
-    return ret;
-}
+    if(pStr == NULL) return 0;
 
-ERRLIB_API int __stdcall ErrLib_ST_GetSymSource(const ERRLIB_STACK_FRAME* pFrame, WCHAR* pOutput, int cch){
-    int ret;
+    size = wcslen(pStr)+1; //account for null terminator
 
-    if(pFrame == NULL) return 0;
-    
-    ret = wcslen(pFrame->src_file);
+    if(pOutput != NULL && cch>1){
+        StringCchCopy(pOutput, cch, pStr);
+    }
 
-    if(cch==0 || pOutput == NULL) return ret;
-
-    StringCchCopy(pOutput, cch, pFrame->src_file);
-    return ret;
+    return size;
 }
 
 ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame){
