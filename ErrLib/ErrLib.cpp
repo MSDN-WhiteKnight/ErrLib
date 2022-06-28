@@ -25,7 +25,7 @@ BOOL volatile ErrLib_fOutputMbox = FALSE; //Configuration flag: Output errors as
 BOOL volatile ErrLib_fOutputEventLog = FALSE; //Configuration flag: Output errors into Windows Event Log
 BOOL volatile ErrLib_fOutputCustom = FALSE; //Configuration flag: Output errors into custom target
 
-int ErrLib_VisualCppRtVersion = VisualCppVersion;
+int ErrLib_VisualCppRtVersion = MSVC_VERSION;
 BOOL ErrLib_fDebugBuild = FALSE;
 
 DWORD volatile ErrLib_tlsiLastExceptionCode = 0;
@@ -40,7 +40,7 @@ extern "C" {
 
 BOOL IsOnVisualCpp2015OrAbove() {
 
-    if (VisualCppVersion >= VISUAL_STUDIO_V2015) return TRUE;
+    if (MSVC_VERSION >= VISUAL_STUDIO_V2015) return TRUE;
 
     return ErrLib_VisualCppRtVersion >= VISUAL_STUDIO_V2015;
 }
@@ -129,10 +129,10 @@ ERRLIB_API void __stdcall ErrLib_ErrorMes(LPTSTR lpszFunction,DWORD dw,WCHAR* bu
 ERRLIB_API DWORD __stdcall ErrLib_GetWinapiErrorMessage(DWORD dwCode, BOOL localized, WCHAR* pOutput, int cch) 
 { 
     // Retrieve the system error message for the specified Win32 error code
+    DWORD dwLangID;
 
     if(pOutput == NULL) return 0;
-
-    DWORD dwLangID;
+    
     StringCchCopy(pOutput, cch, L"");
 
     if(localized != FALSE) dwLangID = LANG_USER_DEFAULT;
@@ -689,6 +689,8 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
     WCHAR strbuf[MAX_SYM_NAME*3]={0};
 
     PSYMBOL_INFOW pSymbol = (PSYMBOL_INFOW)buffer;
+    BOOL symbolFound = FALSE;
+    BOOL lineinfoFound = FALSE;
 
     // Context record could be modified by StackWalk64, which causes crashes on x64 when the context comes from the
     // SEH exception information. So we create a copy here to prevent it.
@@ -742,7 +744,7 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
         ZeroMemory(buffer,sizeof(buffer));
         pSymbol->SizeOfStruct = sizeof(SYMBOL_INFOW);
         pSymbol->MaxNameLen = MAX_SYM_NAME;
-        BOOL symbolFound = SymFromAddrW(process, ( ULONG64 )stack.AddrPC.Offset, &displacement, pSymbol);
+        symbolFound = SymFromAddrW(process, ( ULONG64 )stack.AddrPC.Offset, &displacement, pSymbol);
 
         if(symbolFound == FALSE){ //name not available, output address instead
             StringCchPrintf(pSymbol->Name,MAX_SYM_NAME,L"0x%llx",(DWORD64)stack.AddrPC.Offset);
@@ -766,7 +768,7 @@ ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t 
         }
 
         //try to get line
-        BOOL lineinfoFound = FALSE;
+        lineinfoFound = FALSE;
 
         if (symbolFound != FALSE) {
             // Only try to find line info when symbol is found - fixes crash when Win7 DbgHelp reads PDB symbols 

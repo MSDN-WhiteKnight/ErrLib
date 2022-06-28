@@ -8,9 +8,9 @@ const int VISUAL_STUDIO_V2015 = 1900;
 const int VISUAL_STUDIO_V2019 = 1920;
 
 #if defined(_MSC_VER)
-const int VisualCppVersion = _MSC_VER;
+#define MSVC_VERSION _MSC_VER
 #else
-const int VisualCppVersion = 0;
+#define MSVC_VERSION 0
 #endif
 
 #if defined(_M_AMD64)
