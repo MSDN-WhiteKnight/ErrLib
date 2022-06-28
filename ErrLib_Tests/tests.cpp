@@ -41,6 +41,13 @@ void foo(){throw MyException();}
 
 void bar(){foo();}
 
+ERRLIB_STACK_TRACE StackTraceTestFunc(){
+    CONTEXT ctx;
+    RtlCaptureContext(&ctx);
+    ERRLIB_STACK_TRACE stackTrace = ErrLib_GetStackTrace(&ctx);
+    return stackTrace;
+}
+
 const WCHAR logname[] = L"errlib.log";
 const int BUFFER_SIZE = 5000;
 WCHAR buf[BUFFER_SIZE]=L"";
@@ -71,6 +78,30 @@ void FileReadAllLines(const WCHAR* logname, WCHAR* pOutput, int cch){
     }
 
     fclose(fp);
+}
+
+void Assert_Contains(const WCHAR* str, const WCHAR* substr){
+    const WCHAR* match = wcsstr(str, substr);
+    Assert::IsTrue(match != NULL);
+}
+
+void Assert_ContainsSymbol(const ERRLIB_STACK_TRACE* pStack, const WCHAR* symbol){
+    bool found = false;
+    WCHAR frameSymbol[MAX_SYM_NAME]=L"";
+    ERRLIB_STACK_FRAME frame;
+
+    for(int i=0;i<ErrLib_ST_GetFramesCount(pStack);i++){
+        
+        ErrLib_ST_GetFrame(pStack,i,&frame);
+        ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME, frameSymbol, MAX_SYM_NAME);
+
+        if(wcscmp(frameSymbol, symbol) == 0) {
+            found = true;
+            break;
+        }
+    }
+
+    Assert::IsTrue(found);
 }
 
 namespace ErrLib_Tests
@@ -362,6 +393,81 @@ namespace ErrLib_Tests
 
             // Just verify that it does not crash and returns non-empty string. The exact message depends on current language.
             Assert::IsTrue(exc.GetMsg().length() > 0);
+        }
+
+        TEST_METHOD(Test_GetStackTrace){
+            ERRLIB_STACK_TRACE stackTrace = StackTraceTestFunc();
+            ERRLIB_STACK_FRAME firstFrame;
+            WCHAR buf[MAX_PATH]=L"";
+            int nChars;
+            BOOL res = ErrLib_ST_GetFrame(&stackTrace, 0, &firstFrame);
+            
+            Assert::IsTrue(res != FALSE);
+            Assert::IsTrue(ErrLib_ST_GetFramesCount(&stackTrace) > 1);
+            Assert::IsTrue(stackTrace.capacity > stackTrace.count);
+            Assert::IsTrue(stackTrace.isOnHeap != FALSE);
+            Assert::IsTrue(stackTrace.data != NULL);
+            Assert::IsTrue(ErrLib_ST_GetAddress(&firstFrame) != 0x0);
+
+            if(DEBUG_BUILD){
+                // x86 stack trace does not contain the direct caller for some reason, so we assert
+                // on the second frame to cover both cases
+                Assert_ContainsSymbol(&stackTrace, L"ErrLib_Tests::Tests::Test_GetStackTrace");
+
+                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_MODULE, buf, MAX_PATH);
+                Assert_Contains(buf, L"ErrLib_Tests.dll");
+                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+
+                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_SOURCE, buf, MAX_PATH);
+                Assert_Contains(buf, L"tests.cpp");
+                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+            }
+
+            ErrLib_FreeStackTrace(&stackTrace);
+            Assert::AreEqual(0, ErrLib_ST_GetFramesCount(&stackTrace));
+            Assert::AreEqual(0, stackTrace.capacity);
+            Assert::AreEqual<void*>(NULL, stackTrace.data);
+        }
+
+        TEST_METHOD(Test_StackFrame){
+            ERRLIB_STACK_FRAME frame;
+            WCHAR buf[MAX_SYM_NAME]=L"";
+            int nChars=0;
+
+            const WCHAR* ExampleSymbol = L"ExampleSymbolName";
+            const WCHAR* ExampleModule = L"module.dll";
+            const WCHAR* ExampleSource = L"example.cpp";
+
+            StringCchCopy(frame.symbol, MAX_SYM_NAME, ExampleSymbol);
+            StringCchCopy(frame.module, MAX_PATH, ExampleModule);
+            StringCchCopy(frame.src_file, MAX_PATH, ExampleSource);
+
+            //buffer is too short
+            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME, buf, 3);
+            Assert::AreEqual<int>(wcslen(ExampleSymbol)+1, nChars);
+            Assert::AreEqual(L"Ex", buf);
+
+            memset(buf, 0, sizeof(buf));
+            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_MODULE, buf, 1);
+            Assert::AreEqual<int>(wcslen(ExampleModule)+1, nChars);
+            Assert::AreEqual(L"", buf);
+
+            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_SOURCE, buf, 2);
+            Assert::AreEqual<int>(wcslen(ExampleSource)+1, nChars);
+            Assert::AreEqual(L"e", buf);
+
+            //buffer is long enough
+            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME, buf, MAX_SYM_NAME);
+            Assert::AreEqual<int>(wcslen(ExampleSymbol)+1, nChars);
+            Assert::AreEqual(ExampleSymbol, buf);
+
+            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_MODULE, buf, MAX_SYM_NAME);
+            Assert::AreEqual<int>(wcslen(ExampleModule)+1, nChars);
+            Assert::AreEqual(ExampleModule, buf);
+
+            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_SOURCE, buf, MAX_SYM_NAME);
+            Assert::AreEqual<int>(wcslen(ExampleSource)+1, nChars);
+            Assert::AreEqual(ExampleSource, buf);
         }
     };
 }

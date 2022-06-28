@@ -9,6 +9,7 @@
 #define ErrLib_H_INCLUDED
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include <windows.h>
 #include <strsafe.h>
@@ -97,6 +98,10 @@
 #define ERRLIB_PARAM_VISUALCPPVERSION 100
 #define ERRLIB_PARAM_ISDEBUGBUILD 101
 
+#define ERRLIB_SYMBOL_NAME   1
+#define ERRLIB_SYMBOL_MODULE 2
+#define ERRLIB_SYMBOL_SOURCE 3
+
 // *** Typedefs *** 
 
 //Function pointer type used as unhandled exception callback
@@ -104,6 +109,22 @@ typedef LONG  (WINAPI * ERRLIB_EXCEPTION_CALLBACK) ( struct _EXCEPTION_POINTERS 
 
 //Function pointer type used for custom logging targets
 typedef void (WINAPI * ERRLIB_LOGGING_CALLBACK) (LPCWSTR, void*);
+
+typedef struct structERRLIB_STACK_FRAME{
+    uint64_t addr;
+    uint64_t displacement;
+    WCHAR symbol[MAX_SYM_NAME];
+    WCHAR module[MAX_PATH];
+    WCHAR src_file[MAX_PATH];
+    DWORD src_line;
+} ERRLIB_STACK_FRAME;
+
+typedef struct structERRLIB_STACK_TRACE{
+    ERRLIB_STACK_FRAME *data;
+    int capacity;
+    int count;
+    BOOL isOnHeap;
+} ERRLIB_STACK_TRACE;
 
 // *** Custom exception codes for SEH *** 
 
@@ -221,6 +242,22 @@ ERRLIB_API BOOL __stdcall ErrLib_RegisterEventSource();
  * Therefore, do not call this function on every application exit; instead only do so when its events are no longer needed (i.e., when application is uninstalled).
  */
 ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource();
+
+ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_GetStackTrace(CONTEXT* ctx);
+
+ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount(const ERRLIB_STACK_TRACE* pStack);
+
+ERRLIB_API BOOL  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n, ERRLIB_STACK_FRAME* pOutput);
+
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress(const ERRLIB_STACK_FRAME* pFrame);
+
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME* pFrame);
+
+ERRLIB_API int __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId, WCHAR* pOutput, int cch);
+
+ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame);
+
+ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack);
 
 /**
  * Prints stack trace for the specified context record

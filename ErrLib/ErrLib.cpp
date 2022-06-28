@@ -415,6 +415,258 @@ ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource(){
 	return TRUE;
 }
 
+ERRLIB_STACK_TRACE StackTrace_Alloc(int capacity){
+    ERRLIB_STACK_TRACE ret;
+    memset(&ret,0,sizeof(ret));
+    ret.data = (ERRLIB_STACK_FRAME*)malloc(capacity * sizeof(ERRLIB_STACK_FRAME));
+    ret.capacity = capacity;
+    ret.isOnHeap = TRUE;
+    return ret;
+}
+
+void StackTrace_Realloc(ERRLIB_STACK_TRACE* pStack, int newCapacity){
+    size_t newSize = newCapacity * sizeof(ERRLIB_STACK_FRAME);
+    ERRLIB_STACK_FRAME* pNewData = (ERRLIB_STACK_FRAME*)malloc(newSize);
+
+    if(pStack->data != NULL && pStack->isOnHeap != FALSE){
+        memcpy_s(pNewData, newSize, pStack->data, pStack->count * sizeof(ERRLIB_STACK_FRAME));
+        free(pStack->data);
+    }
+
+    pStack->data = pNewData;
+    pStack->capacity = newCapacity;
+    pStack->isOnHeap = TRUE;
+}
+
+ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount(const ERRLIB_STACK_TRACE* pStack){
+    if(pStack==NULL) return 0;
+    return pStack->count;
+}
+
+ERRLIB_API BOOL  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n, ERRLIB_STACK_FRAME* pOutput){
+    if(pStack==NULL) return FALSE;
+    if(n<0 || n>= pStack->count) return FALSE;
+    memcpy_s(pOutput, sizeof(ERRLIB_STACK_FRAME), &(pStack->data[n]), sizeof(ERRLIB_STACK_FRAME));
+    return TRUE;
+}
+
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress(const ERRLIB_STACK_FRAME* pFrame){
+    if(pFrame == NULL) return 0x0;
+    return pFrame->addr;
+}
+
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME* pFrame){
+    if(pFrame == NULL) return 0x0;
+    return pFrame->displacement;
+}
+
+const WCHAR* StackFrameGetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId){
+    switch(propId){
+        case ERRLIB_SYMBOL_NAME:   return pFrame->symbol;
+        case ERRLIB_SYMBOL_MODULE: return pFrame->module;
+        case ERRLIB_SYMBOL_SOURCE: return pFrame->src_file;
+        default: return NULL;
+    }
+}
+
+ERRLIB_API int __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId, WCHAR* pOutput, int cch){
+    const WCHAR* pStr = NULL;
+    int size = 0;
+
+    if(pFrame == NULL) return 0;
+
+    pStr = StackFrameGetStringProperty(pFrame, propId);
+
+    if(pStr == NULL) return 0;
+
+    size = wcslen(pStr)+1; //account for null terminator
+
+    if(pOutput != NULL && cch>1){
+        StringCchCopy(pOutput, cch, pStr);
+    }
+
+    return size;
+}
+
+ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame){
+    if(pFrame == NULL) return 0;
+    return pFrame->src_line;
+}
+
+ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack){
+    
+    if(pStack->data != NULL && pStack->isOnHeap != FALSE){
+        free(pStack->data);        
+    }
+
+    pStack->data = NULL;
+    pStack->capacity = 0;
+    pStack->count = 0;
+}
+
+void StackTrace_AddFrame(ERRLIB_STACK_TRACE* pStack,const ERRLIB_STACK_FRAME* pFrame){
+
+    if(pStack->count + 1 > pStack->capacity) StackTrace_Realloc(pStack, pStack->capacity * 2);
+
+    pStack->data[pStack->count] = *pFrame;
+    pStack->count++;
+}
+
+ERRLIB_STACK_TRACE StackTrace_Copy(const ERRLIB_STACK_TRACE* pInput){
+    ERRLIB_STACK_TRACE output;
+    ERRLIB_STACK_FRAME* pNewData = NULL;
+    int newCapacity = pInput->count;
+
+    if(newCapacity<10) newCapacity=10;
+
+    pNewData = (ERRLIB_STACK_FRAME*)malloc(newCapacity * sizeof(ERRLIB_STACK_FRAME));
+
+    if(pInput->data != NULL && pInput->count>0){
+        memcpy_s(pNewData, newCapacity * sizeof(ERRLIB_STACK_FRAME), pInput->data, pInput->count);
+    }
+
+    output.capacity = newCapacity;
+    output.count = pInput->count;
+    output.data = pNewData;
+    output.isOnHeap = TRUE;
+    return output;
+}
+
+void ErrLib_GetStackTraceImpl(CONTEXT* ctx, ERRLIB_STACK_TRACE* pOutput) 
+{
+    BOOL    result  = FALSE;
+    HANDLE  process = NULL;
+    HANDLE  thread  = NULL;
+    HMODULE hModule = NULL;
+
+    STACKFRAME64        stack;
+    ULONG               frame=0;    
+    DWORD64             displacement=0;
+
+    DWORD disp = 0;
+    IMAGEHLP_LINEW64 *line = NULL;
+
+    char buffer[sizeof(SYMBOL_INFOW) + MAX_SYM_NAME * sizeof(WCHAR)]={0};    
+    WCHAR module[ErrLib_MaxNameLen]={0};
+    ERRLIB_STACK_FRAME stackFrame;
+
+    PSYMBOL_INFOW pSymbol = (PSYMBOL_INFOW)buffer;
+    BOOL symbolFound = FALSE;
+    BOOL lineinfoFound = FALSE;
+
+    // Context record could be modified by StackWalk64, which causes crashes on x64 when the context comes from the
+    // SEH exception information. So we create a copy here to prevent it.
+    // https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-stackwalk64
+    // https://github.com/MSDN-WhiteKnight/ErrLib/issues/2
+    CONTEXT ctxCopy;
+    memcpy(&ctxCopy, ctx, sizeof(CONTEXT));    
+    
+    pOutput->count = 0;
+    memset( &stack, 0, sizeof( STACKFRAME64 ) );
+
+    process                = GetCurrentProcess();
+    thread                 = GetCurrentThread();
+    displacement           = 0;
+#if !defined(_M_AMD64)
+    stack.AddrPC.Offset    = (*ctx).Eip;
+    stack.AddrPC.Mode      = AddrModeFlat;
+    stack.AddrStack.Offset = (*ctx).Esp;
+    stack.AddrStack.Mode   = AddrModeFlat;
+    stack.AddrFrame.Offset = (*ctx).Ebp;
+    stack.AddrFrame.Mode   = AddrModeFlat;
+#endif
+
+	EnterCriticalSection(&ErrLib_DbgHlpSync);
+	__try{
+
+    for( frame = 0; ; frame++ )
+    {
+        //get next call from stack
+        result = StackWalk64
+        (
+#if defined(_M_AMD64)
+            IMAGE_FILE_MACHINE_AMD64
+#else
+            IMAGE_FILE_MACHINE_I386
+#endif
+            ,
+            process,
+            thread,
+            &stack,
+            &ctxCopy,
+            NULL,
+            SymFunctionTableAccess64,
+            SymGetModuleBase64,
+            NULL
+        );
+
+        if( !result ) break;
+
+        memset(&stackFrame, 0, sizeof(stackFrame));
+
+        //get symbol name for address
+        ZeroMemory(buffer,sizeof(buffer));
+        pSymbol->SizeOfStruct = sizeof(SYMBOL_INFOW);
+        pSymbol->MaxNameLen = MAX_SYM_NAME;
+        symbolFound = SymFromAddrW(process, (ULONG64)stack.AddrPC.Offset, &displacement, pSymbol);
+
+        if(symbolFound == FALSE){ //name not available, output address instead
+            StringCchPrintf(pSymbol->Name,MAX_SYM_NAME,L"0x%llx",(DWORD64)stack.AddrPC.Offset);
+        }
+
+        stackFrame.addr = stack.AddrPC.Offset;
+        stackFrame.displacement = displacement;
+        StringCchCopy(stackFrame.symbol, MAX_SYM_NAME, pSymbol->Name);
+
+        line = (IMAGEHLP_LINEW64 *)malloc(sizeof(IMAGEHLP_LINEW64));
+                ZeroMemory(line,sizeof(IMAGEHLP_LINEW64));
+        line->SizeOfStruct = sizeof(IMAGEHLP_LINEW64);  
+
+        //get module name
+        hModule = NULL;		
+        wcscpy(module,L"");   
+        
+        GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, 
+                (LPCTSTR)(stack.AddrPC.Offset), &hModule);
+
+        if(hModule != NULL){
+            GetModuleFileName(hModule,module,ErrLib_MaxNameLen);
+            StringCchCopy(stackFrame.module, MAX_PATH, module);
+        }
+
+        //try to get line
+        lineinfoFound = FALSE;
+
+        if (symbolFound != FALSE) {
+            // Only try to find line info when symbol is found - fixes crash when Win7 DbgHelp reads PDB symbols 
+            // built with /DEBUG:FASTLINK option
+            // (https://github.com/MSDN-WhiteKnight/ErrLib/issues/2)
+            lineinfoFound = SymGetLineFromAddrW64(process, stack.AddrPC.Offset, &disp, line);
+        }
+
+        if (lineinfoFound != FALSE)
+        {
+            StringCchCopy(stackFrame.src_file, MAX_PATH,line->FileName);
+            stackFrame.src_line = line->LineNumber;
+        }
+        
+        StackTrace_AddFrame(pOutput, &stackFrame);
+        free(line);
+        line = NULL;
+		if(frame > 9999)break;
+    }//end for
+
+	}__finally{
+	   LeaveCriticalSection(&ErrLib_DbgHlpSync);
+	}
+}
+
+ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_GetStackTrace(CONTEXT* ctx){
+    ERRLIB_STACK_TRACE ret = StackTrace_Alloc(50);
+    ErrLib_GetStackTraceImpl(ctx, &ret);
+    return ret;
+}
+
 //Prints stack trace based on context record
 ERRLIB_API void __stdcall ErrLib_PrintStack( CONTEXT* ctx , WCHAR* dest, size_t cch) 
 {
