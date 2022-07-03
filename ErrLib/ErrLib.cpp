@@ -223,7 +223,7 @@ ERRLIB_API BOOL __stdcall ErrLib_InitThread(){
     LPVOID lpvData = NULL;
     BOOL res;
     ERRLIB_STACK_TRACE stack;
-    printf("ErrLib_InitThread start");
+    fprintf(stderr,"ErrLib_InitThread start");
 
 		lpvData = LocalAlloc(LPTR,sizeof(ULONG_PTR) * 2);
 		res = TlsSetValue(ErrLib_tlsiExArgs,lpvData);
@@ -256,7 +256,7 @@ ERRLIB_API BOOL __stdcall ErrLib_InitThread(){
         memcpy(lpvData, &stack, sizeof(stack));
     }
 
-    printf("ErrLib_InitThread end");
+    fprintf(stderr,"ErrLib_InitThread end");
 	return res;
 }
 
