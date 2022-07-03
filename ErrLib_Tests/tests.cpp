@@ -470,7 +470,7 @@ namespace ErrLib_Tests
             Assert::AreEqual(ExampleSource, buf);
         }
 
-        TEST_METHOD(Test_Except_GetStackTraceData) 
+        /*TEST_METHOD(Test_Except_GetStackTraceData) 
         {
             ERRLIB_STACK_TRACE stackTrace;
             ERRLIB_STACK_FRAME firstFrame;
@@ -507,6 +507,6 @@ namespace ErrLib_Tests
 
             ErrLib_FreeStackTrace(&stackTrace);
             Assert::AreEqual(0, ErrLib_ST_GetFramesCount(&stackTrace));
-        }
+        }*/
     };
 }
