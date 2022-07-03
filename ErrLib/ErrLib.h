@@ -334,6 +334,8 @@ ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetMessage();
  */
 ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetStackTrace();
 
+ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_Except_GetStackTraceData();
+
 ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWORD FilteredCode);
 ERRLIB_API LONG __stdcall ErrLib_CatchAll( struct _EXCEPTION_POINTERS * ex);
 

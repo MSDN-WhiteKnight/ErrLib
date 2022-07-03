@@ -34,9 +34,15 @@ DWORD volatile ErrLib_tlsiLastExceptionStack = 0;
 DWORD volatile ErrLib_tlsiStrBuf = 0;
 DWORD volatile ErrLib_tlsiExArgs = 0;
 
+// TLS ID: Last exception stack trace
+DWORD volatile ErrLib_tlsiStackTrace = 0;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+ERRLIB_STACK_TRACE StackTrace_Alloc(int capacity);
+ERRLIB_STACK_TRACE StackTrace_Copy(const ERRLIB_STACK_TRACE* pInput);
 
 BOOL IsOnVisualCpp2015OrAbove() {
 
@@ -76,6 +82,17 @@ ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetMessage(){
 ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetStackTrace(){
 	return (LPWSTR)TlsGetValue(ErrLib_tlsiLastExceptionStack);
 	//return ErrLib_LastExceptionStack;
+}
+
+// Gets a pointer to the thread-local buffer holding last exception stack trace data
+ERRLIB_STACK_TRACE* ErrLib_GetStackTracePointer(){
+    return (ERRLIB_STACK_TRACE*)TlsGetValue(ErrLib_tlsiStackTrace);
+}
+
+ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_Except_GetStackTraceData(){
+    ERRLIB_STACK_TRACE* pStack;
+    pStack = ErrLib_GetStackTracePointer();
+    return StackTrace_Copy(pStack);
 }
 
 //Gets filename from full path
@@ -203,8 +220,9 @@ ERRLIB_API BOOL __stdcall ErrLib_SetParameter(UINT param, UINT_PTR value){
 
 ERRLIB_API BOOL __stdcall ErrLib_InitThread(){
 
-	LPVOID lpvData = NULL;
-	BOOL res;
+    LPVOID lpvData = NULL;
+    BOOL res;
+    ERRLIB_STACK_TRACE stack;
 
 		lpvData = LocalAlloc(LPTR,sizeof(ULONG_PTR) * 2);
 		res = TlsSetValue(ErrLib_tlsiExArgs,lpvData);
@@ -226,6 +244,17 @@ ERRLIB_API BOOL __stdcall ErrLib_InitThread(){
 		res = TlsSetValue(ErrLib_tlsiStrBuf,lpvData);
 		if(res == FALSE) fwprintf(stderr,L"TlsSetValue failed\n");
 
+    lpvData = LocalAlloc(LPTR, sizeof(ERRLIB_STACK_TRACE));
+    res = TlsSetValue(ErrLib_tlsiStackTrace,lpvData);
+
+    if(res == FALSE) {
+        fwprintf(stderr,L"TlsSetValue failed\n");
+    }
+    else{
+        stack = StackTrace_Alloc(10);
+        memcpy(lpvData, &stack, sizeof(stack));
+    }
+
 	return res;
 }
 
@@ -246,7 +275,11 @@ ERRLIB_API void __stdcall ErrLib_FreeThread(){
 		LocalFree(lpvData);
 
 		lpvData =  TlsGetValue(ErrLib_tlsiStrBuf);
-		LocalFree(lpvData);	
+		LocalFree(lpvData);
+
+    lpvData = TlsGetValue(ErrLib_tlsiStackTrace);
+    ErrLib_FreeStackTrace((ERRLIB_STACK_TRACE*)lpvData);
+    LocalFree(lpvData);
 }
 
 ERRLIB_API BOOL __stdcall ErrLib_InitTLS(){
@@ -282,6 +315,13 @@ ERRLIB_API BOOL __stdcall ErrLib_InitTLS(){
 			fwprintf(stderr,L"TlsAlloc failed\n");
 			retval = FALSE;
 		}
+
+    ErrLib_tlsiStackTrace = TlsAlloc();
+
+    if(ErrLib_tlsiStackTrace == TLS_OUT_OF_INDEXES) {
+        fwprintf(stderr,L"TlsAlloc failed\n");
+        retval = FALSE;
+    }
 
     return retval;        
 }
@@ -522,7 +562,7 @@ ERRLIB_STACK_TRACE StackTrace_Copy(const ERRLIB_STACK_TRACE* pInput){
     pNewData = (ERRLIB_STACK_FRAME*)malloc(newCapacity * sizeof(ERRLIB_STACK_FRAME));
 
     if(pInput->data != NULL && pInput->count>0){
-        memcpy_s(pNewData, newCapacity * sizeof(ERRLIB_STACK_FRAME), pInput->data, pInput->count);
+        memcpy_s(pNewData, newCapacity * sizeof(ERRLIB_STACK_FRAME), pInput->data, pInput->count * sizeof(ERRLIB_STACK_FRAME));
     }
 
     output.capacity = newCapacity;
@@ -1114,6 +1154,10 @@ ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWO
 
         if (!IsStackTraceDisabled()) {
             ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
+
+            ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
+            pStack->count = 0;
+            ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);
         }
 
         return EXCEPTION_EXECUTE_HANDLER;
@@ -1128,6 +1172,10 @@ ERRLIB_API LONG __stdcall ErrLib_CatchAll( struct _EXCEPTION_POINTERS * ex){
 
     if (!IsStackTraceDisabled()) {
         ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
+        
+        ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
+        pStack->count = 0;
+        ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);
     }
 
     return EXCEPTION_EXECUTE_HANDLER;

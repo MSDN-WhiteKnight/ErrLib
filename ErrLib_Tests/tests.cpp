@@ -469,5 +469,44 @@ namespace ErrLib_Tests
             Assert::AreEqual<int>(wcslen(ExampleSource)+1, nChars);
             Assert::AreEqual(ExampleSource, buf);
         }
+
+        TEST_METHOD(Test_Except_GetStackTraceData) 
+        {
+            ERRLIB_STACK_TRACE stackTrace;
+            ERRLIB_STACK_FRAME firstFrame;
+            int nChars;
+            WCHAR buf[MAX_PATH]=L"";
+
+            __try {
+                func();
+            }
+            ERRLIB_CATCH(EXCEPTION_INT_DIVIDE_BY_ZERO) {
+                stackTrace = ErrLib_Except_GetStackTraceData();
+            }
+
+            Assert::IsTrue(ErrLib_ST_GetFramesCount > 0);
+            BOOL res = ErrLib_ST_GetFrame(&stackTrace, 0, &firstFrame);
+            Assert::IsTrue(ErrLib_ST_GetAddress(&firstFrame) != NULL);
+
+            if(DEBUG_BUILD){
+                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_NAME, buf, MAX_PATH);
+                Assert::AreEqual(buf, L"func1");
+                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+                
+                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_MODULE, buf, MAX_PATH);
+                Assert_Contains(buf, L"ErrLib_Tests.dll");
+                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+
+                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_SOURCE, buf, MAX_PATH);
+                Assert_Contains(buf, L"tests.cpp");
+                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+
+                Assert_ContainsSymbol(&stackTrace, L"func");
+                Assert_ContainsSymbol(&stackTrace, L"ErrLib_Tests::Tests::Test_Except_GetStackTraceData");
+            }
+
+            ErrLib_FreeStackTrace(&stackTrace);
+            Assert::AreEqual(0, ErrLib_ST_GetFramesCount(&stackTrace));
+        }
     };
 }
