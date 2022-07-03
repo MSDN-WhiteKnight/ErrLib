@@ -5,7 +5,7 @@
 #include "ErrLib.h"
 #include "ErrLib_CPP.h"
 
-/********************************************************************************/
+/*******************************************************************************/
 
 LONG WINAPI MyExceptionCallback (struct _EXCEPTION_POINTERS* ex, LPCWSTR mes, LPCWSTR stack){
     //display error information
