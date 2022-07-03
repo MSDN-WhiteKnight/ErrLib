@@ -278,8 +278,14 @@ ERRLIB_API void __stdcall ErrLib_FreeThread(){
 		LocalFree(lpvData);
 
     lpvData = TlsGetValue(ErrLib_tlsiStackTrace);
-    ErrLib_FreeStackTrace((ERRLIB_STACK_TRACE*)lpvData);
-    LocalFree(lpvData);
+
+    if(lpvData != NULL){
+        ErrLib_FreeStackTrace((ERRLIB_STACK_TRACE*)lpvData);
+        LocalFree(lpvData);
+    }
+    else {
+        fwprintf(stderr,L"TlsGetValue failed\n");
+    }
 }
 
 ERRLIB_API BOOL __stdcall ErrLib_InitTLS(){
