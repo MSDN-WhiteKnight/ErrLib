@@ -112,7 +112,9 @@ namespace ErrLib_Tests
 		
         Tests() 
         {
+            printf("ErrLib_Initialize start");
             ErrLib_Initialize();
+            printf("ErrLib_Initialize end");
         }
 
         TEST_METHOD(Test_Errlib_Catch) 
@@ -472,6 +474,7 @@ namespace ErrLib_Tests
 
         TEST_METHOD(Test_Except_GetStackTraceData) 
         {
+            printf("Test_Except_GetStackTraceData");
             ERRLIB_STACK_TRACE stackTrace;
             ERRLIB_STACK_FRAME firstFrame;
             int nChars;
