@@ -244,7 +244,7 @@ ERRLIB_API BOOL __stdcall ErrLib_InitThread(){
 		res = TlsSetValue(ErrLib_tlsiStrBuf,lpvData);
 		if(res == FALSE) fwprintf(stderr,L"TlsSetValue failed\n");
 
-    /*lpvData = LocalAlloc(LPTR, sizeof(ERRLIB_STACK_TRACE));
+    lpvData = LocalAlloc(LPTR, sizeof(ERRLIB_STACK_TRACE));
     res = TlsSetValue(ErrLib_tlsiStackTrace,lpvData);
 
     if(res == FALSE) {
@@ -253,7 +253,7 @@ ERRLIB_API BOOL __stdcall ErrLib_InitThread(){
     else{
         stack = StackTrace_Alloc(10);
         memcpy(lpvData, &stack, sizeof(stack));
-    }*/
+    }
 
 	return res;
 }
@@ -277,9 +277,9 @@ ERRLIB_API void __stdcall ErrLib_FreeThread(){
 		lpvData =  TlsGetValue(ErrLib_tlsiStrBuf);
 		LocalFree(lpvData);
 
-    /*lpvData = TlsGetValue(ErrLib_tlsiStackTrace);
+    lpvData = TlsGetValue(ErrLib_tlsiStackTrace);
     ErrLib_FreeStackTrace((ERRLIB_STACK_TRACE*)lpvData);
-    LocalFree(lpvData);*/
+    LocalFree(lpvData);
 }
 
 ERRLIB_API BOOL __stdcall ErrLib_InitTLS(){
@@ -316,12 +316,12 @@ ERRLIB_API BOOL __stdcall ErrLib_InitTLS(){
 			retval = FALSE;
 		}
 
-    /*ErrLib_tlsiStackTrace = TlsAlloc();
+    ErrLib_tlsiStackTrace = TlsAlloc();
 
     if(ErrLib_tlsiStackTrace == TLS_OUT_OF_INDEXES) {
         fwprintf(stderr,L"TlsAlloc failed\n");
         retval = FALSE;
-    }*/
+    }
 
     return retval;        
 }
