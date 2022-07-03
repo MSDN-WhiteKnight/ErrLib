@@ -51,6 +51,7 @@ ERRLIB_STACK_TRACE StackTraceTestFunc(){
 const WCHAR logname[] = L"errlib.log";
 const int BUFFER_SIZE = 5000;
 WCHAR buf[BUFFER_SIZE]=L"";
+bool initialized = false;
 
 void WINAPI MyLoggingCallback(LPCWSTR pStr, void* pExtraInfo){
     wcscpy(buf, pStr);
@@ -112,7 +113,10 @@ namespace ErrLib_Tests
 		
         Tests() 
         {
-            ErrLib_Initialize();
+            if(!initialized){
+                ErrLib_Initialize();
+                initialized = true;
+            }
         }
 
         TEST_METHOD(Test_Errlib_Catch) 
