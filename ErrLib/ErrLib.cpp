@@ -283,9 +283,6 @@ ERRLIB_API void __stdcall ErrLib_FreeThread(){
         ErrLib_FreeStackTrace((ERRLIB_STACK_TRACE*)lpvData);
         LocalFree(lpvData);
     }
-    else {
-        fwprintf(stderr,L"TlsGetValue failed\n");
-    }
 }
 
 ERRLIB_API BOOL __stdcall ErrLib_InitTLS(){
@@ -464,7 +461,7 @@ ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource(){
 ERRLIB_STACK_TRACE StackTrace_Alloc(int capacity){
     ERRLIB_STACK_TRACE ret;
     memset(&ret,0,sizeof(ret));
-    ret.data = (ERRLIB_STACK_FRAME*)malloc(capacity * sizeof(ERRLIB_STACK_FRAME));
+    ret.data = (ERRLIB_STACK_FRAME*)LocalAlloc(LPTR, capacity * sizeof(ERRLIB_STACK_FRAME));
     ret.capacity = capacity;
     ret.isOnHeap = TRUE;
     return ret;
@@ -472,11 +469,11 @@ ERRLIB_STACK_TRACE StackTrace_Alloc(int capacity){
 
 void StackTrace_Realloc(ERRLIB_STACK_TRACE* pStack, int newCapacity){
     size_t newSize = newCapacity * sizeof(ERRLIB_STACK_FRAME);
-    ERRLIB_STACK_FRAME* pNewData = (ERRLIB_STACK_FRAME*)malloc(newSize);
+    ERRLIB_STACK_FRAME* pNewData = (ERRLIB_STACK_FRAME*)LocalAlloc(LPTR, newSize);
 
     if(pStack->data != NULL && pStack->isOnHeap != FALSE){
         memcpy_s(pNewData, newSize, pStack->data, pStack->count * sizeof(ERRLIB_STACK_FRAME));
-        free(pStack->data);
+        LocalFree(pStack->data);
     }
 
     pStack->data = pNewData;
@@ -542,7 +539,7 @@ ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame
 ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack){
     
     if(pStack->data != NULL && pStack->isOnHeap != FALSE){
-        free(pStack->data);        
+        LocalFree(pStack->data);
     }
 
     pStack->data = NULL;
@@ -565,7 +562,7 @@ ERRLIB_STACK_TRACE StackTrace_Copy(const ERRLIB_STACK_TRACE* pInput){
 
     if(newCapacity<10) newCapacity=10;
 
-    pNewData = (ERRLIB_STACK_FRAME*)malloc(newCapacity * sizeof(ERRLIB_STACK_FRAME));
+    pNewData = (ERRLIB_STACK_FRAME*)LocalAlloc(LPTR, newCapacity * sizeof(ERRLIB_STACK_FRAME));
 
     if(pInput->data != NULL && pInput->count>0){
         memcpy_s(pNewData, newCapacity * sizeof(ERRLIB_STACK_FRAME), pInput->data, pInput->count * sizeof(ERRLIB_STACK_FRAME));
@@ -1161,9 +1158,9 @@ ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWO
         if (!IsStackTraceDisabled()) {
             ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
 
-            /*ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
+            ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
             pStack->count = 0;
-            ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);*/
+            ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);
         }
 
         return EXCEPTION_EXECUTE_HANDLER;
@@ -1179,9 +1176,9 @@ ERRLIB_API LONG __stdcall ErrLib_CatchAll( struct _EXCEPTION_POINTERS * ex){
     if (!IsStackTraceDisabled()) {
         ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
         
-        /*ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
+        ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
         pStack->count = 0;
-        ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);*/
+        ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);
     }
 
     return EXCEPTION_EXECUTE_HANDLER;
