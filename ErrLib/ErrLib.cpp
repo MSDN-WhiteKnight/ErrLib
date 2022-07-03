@@ -1155,9 +1155,9 @@ ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWO
         if (!IsStackTraceDisabled()) {
             ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
 
-            ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
+            /*ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
             pStack->count = 0;
-            ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);
+            ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);*/
         }
 
         return EXCEPTION_EXECUTE_HANDLER;
@@ -1173,9 +1173,9 @@ ERRLIB_API LONG __stdcall ErrLib_CatchAll( struct _EXCEPTION_POINTERS * ex){
     if (!IsStackTraceDisabled()) {
         ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
         
-        ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
+        /*ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
         pStack->count = 0;
-        ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);
+        ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);*/
     }
 
     return EXCEPTION_EXECUTE_HANDLER;
