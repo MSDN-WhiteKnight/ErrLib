@@ -113,10 +113,10 @@ namespace ErrLib_Tests
 		
         Tests() 
         {
-	    if(!initialized){
+            if(!initialized){
                 ErrLib_Initialize();
-	        initialized = true;
-	    }
+                initialized = true;
+            }
         }
 
         TEST_METHOD(Test_Errlib_Catch) 
