@@ -503,32 +503,16 @@ ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME
     return pFrame->displacement;
 }
 
-const WCHAR* StackFrameGetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId){
+ERRLIB_API const WCHAR* __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId){
+
+    if(pFrame == NULL) return NULL;
+
     switch(propId){
         case ERRLIB_SYMBOL_NAME:   return pFrame->symbol;
         case ERRLIB_SYMBOL_MODULE: return pFrame->module;
         case ERRLIB_SYMBOL_SOURCE: return pFrame->src_file;
         default: return NULL;
     }
-}
-
-ERRLIB_API int __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId, WCHAR* pOutput, int cch){
-    const WCHAR* pStr = NULL;
-    int size = 0;
-
-    if(pFrame == NULL) return 0;
-
-    pStr = StackFrameGetStringProperty(pFrame, propId);
-
-    if(pStr == NULL) return 0;
-
-    size = wcslen(pStr)+1; //account for null terminator
-
-    if(pOutput != NULL && cch>1){
-        StringCchCopy(pOutput, cch, pStr);
-    }
-
-    return size;
 }
 
 ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame){

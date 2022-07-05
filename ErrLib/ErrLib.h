@@ -310,13 +310,25 @@ ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress(const ERRLIB_STACK_FRAME* pFr
  */
 ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME* pFrame);
 
-ERRLIB_API int __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId, WCHAR* pOutput, int cch);
+/**
+ * Gets the value of the string property associated with this stack frame
+ * 
+ * @param pFrame The pointer to a ERRLIB_STACK_FRAME structure
+ * @param propId The integer value that identifies the property to get
+ * @returns A pointer to the null-terminated wide character string that contains the property value, or NULL 
+ * if the property value is not set.
+ * @note Supported property ids are: ERRLIB_SYMBOL_NAME, ERRLIB_SYMBOL_MODULE and ERRLIB_SYMBOL_SOURCE.
+ * @note The returned string is stored in a memory allocated as part of the stack trace data and is freed when 
+ * you call ErrLib_FreeStackTrace.
+ */
+ERRLIB_API const WCHAR* __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId);
 
 /**
  * Gets the source line number from the specified stack frame
  * 
  * @param pFrame The pointer to a ERRLIB_STACK_FRAME structure
  * @returns The unsigned integer the represents the source line number
+ * @note This function only returns a valid line number if the ERRLIB_SYMBOL_SOURCE property is set on the stack frame.
  */
 ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame);
 

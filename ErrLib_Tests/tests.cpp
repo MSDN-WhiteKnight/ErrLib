@@ -88,13 +88,13 @@ void Assert_Contains(const WCHAR* str, const WCHAR* substr){
 
 void Assert_ContainsSymbol(const ERRLIB_STACK_TRACE* pStack, const WCHAR* symbol){
     bool found = false;
-    WCHAR frameSymbol[MAX_SYM_NAME]=L"";
+    const WCHAR* frameSymbol = NULL;
     ERRLIB_STACK_FRAME frame;
 
     for(int i=0;i<ErrLib_ST_GetFramesCount(pStack);i++){
         
         ErrLib_ST_GetFrame(pStack,i,&frame);
-        ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME, frameSymbol, MAX_SYM_NAME);
+        frameSymbol = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME);
 
         if(wcscmp(frameSymbol, symbol) == 0) {
             found = true;
@@ -402,8 +402,9 @@ namespace ErrLib_Tests
         TEST_METHOD(Test_GetStackTrace){
             ERRLIB_STACK_TRACE stackTrace = StackTraceTestFunc();
             ERRLIB_STACK_FRAME firstFrame;
-            WCHAR buf[MAX_PATH]=L"";
-            int nChars;
+            //WCHAR buf[MAX_PATH]=L"";
+            const WCHAR* pStr = NULL;
+            //int nChars;
             BOOL res = ErrLib_ST_GetFrame(&stackTrace, 0, &firstFrame);
             
             Assert::IsTrue(res != FALSE);
@@ -418,13 +419,11 @@ namespace ErrLib_Tests
                 // on the second frame to cover both cases
                 Assert_ContainsSymbol(&stackTrace, L"ErrLib_Tests::Tests::Test_GetStackTrace");
 
-                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_MODULE, buf, MAX_PATH);
-                Assert_Contains(buf, L"ErrLib_Tests.dll");
-                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_MODULE);
+                Assert_Contains(pStr, L"ErrLib_Tests.dll");
 
-                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_SOURCE, buf, MAX_PATH);
-                Assert_Contains(buf, L"tests.cpp");
-                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_SOURCE);
+                Assert_Contains(pStr, L"tests.cpp");
             }
 
             ErrLib_FreeStackTrace(&stackTrace);
@@ -435,9 +434,8 @@ namespace ErrLib_Tests
 
         TEST_METHOD(Test_StackFrame){
             ERRLIB_STACK_FRAME frame;
-            WCHAR buf[MAX_SYM_NAME]=L"";
-            int nChars=0;
-
+            const WCHAR* pStr = NULL;
+            
             const WCHAR* ExampleSymbol = L"ExampleSymbolName";
             const WCHAR* ExampleModule = L"module.dll";
             const WCHAR* ExampleSource = L"example.cpp";
@@ -445,41 +443,22 @@ namespace ErrLib_Tests
             StringCchCopy(frame.symbol, MAX_SYM_NAME, ExampleSymbol);
             StringCchCopy(frame.module, MAX_PATH, ExampleModule);
             StringCchCopy(frame.src_file, MAX_PATH, ExampleSource);
+            
+            pStr = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME);            
+            Assert::AreEqual(ExampleSymbol, pStr);
 
-            //buffer is too short
-            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME, buf, 3);
-            Assert::AreEqual<int>(wcslen(ExampleSymbol)+1, nChars);
-            Assert::AreEqual(L"Ex", buf);
+            pStr = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_MODULE);
+            Assert::AreEqual(ExampleModule, pStr);
 
-            memset(buf, 0, sizeof(buf));
-            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_MODULE, buf, 1);
-            Assert::AreEqual<int>(wcslen(ExampleModule)+1, nChars);
-            Assert::AreEqual(L"", buf);
-
-            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_SOURCE, buf, 2);
-            Assert::AreEqual<int>(wcslen(ExampleSource)+1, nChars);
-            Assert::AreEqual(L"e", buf);
-
-            //buffer is long enough
-            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME, buf, MAX_SYM_NAME);
-            Assert::AreEqual<int>(wcslen(ExampleSymbol)+1, nChars);
-            Assert::AreEqual(ExampleSymbol, buf);
-
-            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_MODULE, buf, MAX_SYM_NAME);
-            Assert::AreEqual<int>(wcslen(ExampleModule)+1, nChars);
-            Assert::AreEqual(ExampleModule, buf);
-
-            nChars = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_SOURCE, buf, MAX_SYM_NAME);
-            Assert::AreEqual<int>(wcslen(ExampleSource)+1, nChars);
-            Assert::AreEqual(ExampleSource, buf);
+            pStr = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_SOURCE);
+            Assert::AreEqual(ExampleSource, pStr);
         }
 
         TEST_METHOD(Test_Except_GetStackTraceData) 
         {
             ERRLIB_STACK_TRACE stackTrace;
             ERRLIB_STACK_FRAME firstFrame;
-            int nChars;
-            WCHAR buf[MAX_PATH]=L"";
+            const WCHAR* pStr = NULL;
 
             __try {
                 func();
@@ -493,17 +472,14 @@ namespace ErrLib_Tests
             Assert::IsTrue(ErrLib_ST_GetAddress(&firstFrame) != NULL);
 
             if(DEBUG_BUILD){
-                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_NAME, buf, MAX_PATH);
-                Assert::AreEqual(buf, L"func1");
-                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_NAME);
+                Assert::AreEqual(L"func1", pStr);
                 
-                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_MODULE, buf, MAX_PATH);
-                Assert_Contains(buf, L"ErrLib_Tests.dll");
-                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_MODULE);
+                Assert_Contains(pStr, L"ErrLib_Tests.dll");
 
-                nChars = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_SOURCE, buf, MAX_PATH);
-                Assert_Contains(buf, L"tests.cpp");
-                Assert::AreEqual<int>(wcslen(buf)+1, nChars);
+                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_SOURCE);
+                Assert_Contains(pStr, L"tests.cpp");
 
                 Assert_ContainsSymbol(&stackTrace, L"func");
                 Assert_ContainsSymbol(&stackTrace, L"ErrLib_Tests::Tests::Test_Except_GetStackTraceData");
