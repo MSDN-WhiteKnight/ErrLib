@@ -1,5 +1,10 @@
 //Project: ErrLib
 //Author: MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
+
+/** \file ErrLib_CPP.h
+ * ErrLib public C++ API
+ */
+
 #ifndef ERRLIB_CPP_H_INCLUDED
 #define ERRLIB_CPP_H_INCLUDED
 #include "ErrLib.h"
@@ -131,6 +136,9 @@ public:
     }
 };
 
+/**
+ * Represents an error in Windows native API function
+ */
 class WinapiException : public Exception{
 public: 
     WinapiException(DWORD code,const std::wstring& msg){
@@ -156,6 +164,9 @@ public:
     }
 };
 
+/**
+ * Represents an error in Windows COM API function or method defined by the integer HRESULT code
+ */
 class ComException : public Exception{
 public: 
     ComException(HRESULT hr,const std::wstring& msg){

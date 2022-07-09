@@ -2,7 +2,8 @@
 
 ## Contents
 
-\ref ErrLib.h
+- \ref ErrLib.h
+- \ref ErrLib_CPP.h
 
 ## See also
 

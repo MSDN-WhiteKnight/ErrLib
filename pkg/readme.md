@@ -6,7 +6,7 @@ A library to assist in dealing with exceptions and errors in C/C++ Windows Appli
 
 **License:** BSD 3-clause
 
-**Requirements:** Windows Vista or newer, Visual Studio 2010+ (VS 2015+ or NuGet 3.3+ for NuGet package)
+**Requirements:** Windows Vista or newer, Visual Studio 2012+ (VS 2015+ or NuGet 3.3+ for NuGet package)
 
 ## Features
 

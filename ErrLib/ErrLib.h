@@ -92,7 +92,11 @@
  */
 #define ERRLIB_OUTPUT_EVENT_LOG 4
 
-//Specifies that logging functions should invoke custom logging callback 
+/**
+ * Specifies that logging functions should write information into the custom logging target
+ * @note This configuration parameter is used with ErrLib_SetParameter function (type: BOOL).
+ * @note To set the custom logging target callback, use ErrLib_SetLoggingCallback.
+ */
 #define ERRLIB_OUTPUT_CUSTOM 5
 
 #define ERRLIB_PARAM_VISUALCPPVERSION 100
@@ -178,7 +182,18 @@ ERRLIB_API DWORD __stdcall ErrLib_GetWinapiErrorMessage(DWORD dwCode, BOOL local
 //Gets filename from full path
 ERRLIB_API WCHAR* __stdcall ErrLib_FileNameFromPathW(WCHAR* path);
 
-//Sets current logging callback
+/**
+ * Sets current logging callback - the user-defined function which will be used as a custom logging target
+ * 
+ * @param pCallback The pointer to callback function
+ * 
+ * The callback function must be defined as follows: `void WINAPI MyLoggingCallback(LPCWSTR pStr, void* pExtraInfo) {...}`
+ *
+ * The **pStr** parameter of the callback function points to the logged message. 
+ * The **pExtraInfo** parameter is currently unused.
+ *
+ * @note The logging callback is only used when ERRLIB_OUTPUT_CUSTOM parameter is set to TRUE
+ */
 ERRLIB_API void __stdcall ErrLib_SetLoggingCallback(ERRLIB_LOGGING_CALLBACK pCallback);
 
 /**
@@ -218,6 +233,7 @@ ERRLIB_API void __stdcall ErrLib_SetLogFilePath(LPCWSTR path);
  * - ERRLIB_OUTPUT_STDERR (2). Specifies that logging functions should write information into stderr stream (usually console). Type: BOOL.
  * - ERRLIB_OUTPUT_MBOX (3). Specifies that logging functions should display information as message box. Type: BOOL.
  * - ERRLIB_OUTPUT_EVENT_LOG (4). Specifies that logging functions should write information into Windows Event Log. Type: BOOL.
+ * - ERRLIB_OUTPUT_CUSTOM (5). Specifies that logging functions should write information into the custom logging target. Type: BOOL.
  */
 ERRLIB_API BOOL __stdcall ErrLib_SetParameter(UINT param, UINT_PTR value);
 
