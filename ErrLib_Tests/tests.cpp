@@ -89,12 +89,12 @@ void Assert_Contains(const WCHAR* str, const WCHAR* substr){
 void Assert_ContainsSymbol(const ERRLIB_STACK_TRACE* pStack, const WCHAR* symbol){
     bool found = false;
     const WCHAR* frameSymbol = NULL;
-    ERRLIB_STACK_FRAME frame;
+    const ERRLIB_STACK_FRAME* frame;
 
     for(int i=0;i<ErrLib_ST_GetFramesCount(pStack);i++){
         
-        ErrLib_ST_GetFrame(pStack,i,&frame);
-        frameSymbol = ErrLib_ST_GetStringProperty(&frame, ERRLIB_SYMBOL_NAME);
+        frame = ErrLib_ST_GetFrame(pStack,i);
+        frameSymbol = ErrLib_ST_GetStringProperty(frame, ERRLIB_SYMBOL_NAME);
 
         if(wcscmp(frameSymbol, symbol) == 0) {
             found = true;
@@ -401,28 +401,27 @@ namespace ErrLib_Tests
 
         TEST_METHOD(Test_GetStackTrace){
             ERRLIB_STACK_TRACE stackTrace = StackTraceTestFunc();
-            ERRLIB_STACK_FRAME firstFrame;
-            //WCHAR buf[MAX_PATH]=L"";
+            const ERRLIB_STACK_FRAME* firstFrame;
             const WCHAR* pStr = NULL;
-            //int nChars;
-            BOOL res = ErrLib_ST_GetFrame(&stackTrace, 0, &firstFrame);
             
-            Assert::IsTrue(res != FALSE);
+            firstFrame = ErrLib_ST_GetFrame(&stackTrace, 0);
+            
+            Assert::IsTrue(firstFrame != NULL);
             Assert::IsTrue(ErrLib_ST_GetFramesCount(&stackTrace) > 1);
             Assert::IsTrue(stackTrace.capacity > stackTrace.count);
             Assert::IsTrue(stackTrace.isOnHeap != FALSE);
             Assert::IsTrue(stackTrace.data != NULL);
-            Assert::IsTrue(ErrLib_ST_GetAddress(&firstFrame) != 0x0);
+            Assert::IsTrue(ErrLib_ST_GetAddress(firstFrame) != 0x0);
 
             if(DEBUG_BUILD){
                 // x86 stack trace does not contain the direct caller for some reason, so we assert
                 // on the second frame to cover both cases
                 Assert_ContainsSymbol(&stackTrace, L"ErrLib_Tests::Tests::Test_GetStackTrace");
 
-                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_MODULE);
+                pStr = ErrLib_ST_GetStringProperty(firstFrame, ERRLIB_SYMBOL_MODULE);
                 Assert_Contains(pStr, L"ErrLib_Tests.dll");
 
-                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_SOURCE);
+                pStr = ErrLib_ST_GetStringProperty(firstFrame, ERRLIB_SYMBOL_SOURCE);
                 Assert_Contains(pStr, L"tests.cpp");
             }
 
@@ -457,7 +456,7 @@ namespace ErrLib_Tests
         TEST_METHOD(Test_Except_GetStackTraceData) 
         {
             ERRLIB_STACK_TRACE stackTrace;
-            ERRLIB_STACK_FRAME firstFrame;
+            const ERRLIB_STACK_FRAME* firstFrame;
             const WCHAR* pStr = NULL;
 
             __try {
@@ -468,17 +467,17 @@ namespace ErrLib_Tests
             }
 
             Assert::IsTrue(ErrLib_ST_GetFramesCount > 0);
-            BOOL res = ErrLib_ST_GetFrame(&stackTrace, 0, &firstFrame);
-            Assert::IsTrue(ErrLib_ST_GetAddress(&firstFrame) != NULL);
+            firstFrame = ErrLib_ST_GetFrame(&stackTrace, 0);
+            Assert::IsTrue(ErrLib_ST_GetAddress(firstFrame) != NULL);
 
             if(DEBUG_BUILD){
-                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_NAME);
+                pStr = ErrLib_ST_GetStringProperty(firstFrame, ERRLIB_SYMBOL_NAME);
                 Assert::AreEqual(L"func1", pStr);
                 
-                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_MODULE);
+                pStr = ErrLib_ST_GetStringProperty(firstFrame, ERRLIB_SYMBOL_MODULE);
                 Assert_Contains(pStr, L"ErrLib_Tests.dll");
 
-                pStr = ErrLib_ST_GetStringProperty(&firstFrame, ERRLIB_SYMBOL_SOURCE);
+                pStr = ErrLib_ST_GetStringProperty(firstFrame, ERRLIB_SYMBOL_SOURCE);
                 Assert_Contains(pStr, L"tests.cpp");
 
                 Assert_ContainsSymbol(&stackTrace, L"func");

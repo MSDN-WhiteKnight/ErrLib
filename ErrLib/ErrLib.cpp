@@ -486,11 +486,11 @@ ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount(const ERRLIB_STACK_TRACE* pSta
     return pStack->count;
 }
 
-ERRLIB_API BOOL  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n, ERRLIB_STACK_FRAME* pOutput){
-    if(pStack==NULL) return FALSE;
-    if(n<0 || n>= pStack->count) return FALSE;
-    memcpy_s(pOutput, sizeof(ERRLIB_STACK_FRAME), &(pStack->data[n]), sizeof(ERRLIB_STACK_FRAME));
-    return TRUE;
+ERRLIB_API const ERRLIB_STACK_FRAME*  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n){
+    if(pStack==NULL) return NULL;
+    if(n<0 || n>= pStack->count) return NULL;
+
+    return &(pStack->data[n]);
 }
 
 ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress(const ERRLIB_STACK_FRAME* pFrame){

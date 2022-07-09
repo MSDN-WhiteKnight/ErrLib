@@ -288,10 +288,11 @@ ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount(const ERRLIB_STACK_TRACE* pSta
  * 
  * @param pStack The pointer to a ERRLIB_STACK_TRACE structure
  * @param n The frame number to get
- * @param pOutput The pointer to a ERRLIB_STACK_FRAME structure that will contain the output data
- * @returns TRUE on success or FALSE when error occured
+ * @returns The pointer to a ERRLIB_STACK_FRAME structure that contains the stack frame data
+ * @note The returned structure is stored in a memory allocated as part of the stack trace data and is freed when 
+ * you call ErrLib_FreeStackTrace.
  */
-ERRLIB_API BOOL  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n, ERRLIB_STACK_FRAME* pOutput);
+ERRLIB_API const ERRLIB_STACK_FRAME*  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n);
 
 /**
  * Gets the symbol address from the specified stack frame
