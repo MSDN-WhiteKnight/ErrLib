@@ -10,21 +10,21 @@ Requirements: Windows Vista (or newer), Visual Studio 2012 (or newer)
 
 ** Features **
 
-- Simple way to get exception code, error message and stack trace in the handler block for SEH exceptions (as well as unhandled C++ exceptions which cause them)
+- Simple way to get exception code, error message and stack trace in the handler block for SEH and C++ exceptions
 - Executing user-defined callback function on unhandled SEH exception
-- Helper macros for converting Win32/COM errors into exceptions
-- Configurable logging: can write diagnostic information in log file, stderr stream, Windows Event Log or other targets
-- Multithreaded: all functionality can be used from different threads independently)
+- Converting WinAPI/COM errors into exceptions
+- Configurable logging: can write diagnostic information into log file, stderr stream, Windows Event Log or other targets
+- Multithreaded: all functionality can be used from different threads independently
 - All string processing in Unicode (wide characters)
 
 ========================================================================
 
 ** Usage **
 
-1. Copy ErrLib.h file into one of your include file directories (or just into the project directory)
+1. Copy header files (ErrLib.h and/or ErrLib_CPP.h) into one of your include file directories (or just into the project directory)
 2. Copy the correct version of ErrLib.lib into one of your lib file directories (or just into the project directory)
 3. Copy the correct version of ErrLib.dll into your project output directory (you must distribute it with your application on target machines)
-4. Include ErrLib.h in one of more of your modules and have fun using ErrLib functions (see documentation)!
+4. Include header files in one or more of your modules and have fun using ErrLib functions (see documentation)!
 
 Notes:
 
@@ -34,54 +34,61 @@ Notes:
 
 Simple usage example:
 
+===============================================================================================================
 #include <stdio.h>
-#include <tchar.h>
 #include "ErrLib.h"
+#include "ErrLib_CPP.h"
+
+// Function that throws exception when parameter value is invalid
+float CalcRectangleArea(float width, float height){
+    if(width<=0.0) throw ErrLib::Exception(L"Width must be positive");
+    if(height<=0.0) throw ErrLib::Exception(L"Height must be positive");
+
+    return width * height;
+}
 
 void func1(){
-	int a=0;
-	int c;
-	c = 1/a;
-	printf("%d",c);
+    float s = CalcRectangleArea(0.0, 2.0);
+    wprintf(L"%f\n", s);
 }
 
 void func(){
-	func1();
+    try
+    {
+        func1();
+    }
+    catch(ErrLib::Exception& ex)
+    {
+        // Catch exception and print diagnostic information
+        wprintf(L"Exception: %s\n%s", ex.GetMsg().c_str(), ex.PrintStackTrace().c_str());
+    }
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int main()
 {
-	ErrLib_Initialize();
+    ErrLib_Initialize();
 
-	__try
-	{		
-		func();
-	}
-	ERRLIB_CATCH(EXCEPTION_INT_DIVIDE_BY_ZERO)
-	{	
-		wprintf(L"Exception 0x%x: %s\n%s\n",ErrLib_Except_GetCode(),ErrLib_Except_GetMessage(),ErrLib_Except_GetStackTrace());					
-	}
+    func();
 
-	getchar();
-	return 0;
+    getchar();
+    return 0;
 }
 
-/* Output:
-Exception 0xc0000094: Integer division by zero
-  in ConsoleApplication1.exe!func1 + 0x2b (d:\projects\consoleapplication1\consoleapplication1.cpp; line: 8;)
-  in ConsoleApplication1.exe!func + 0x23 (d:\projects\consoleapplication1\consoleapplication1.cpp; line: 14;)
-  in ConsoleApplication1.exe!wmain + 0x63 (d:\projects\consoleapplication1\consoleapplication1.cpp; line: 23;)
-  in ConsoleApplication1.exe!__tmainCRTStartup + 0x199 (f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c; line: 533;)
-  in ConsoleApplication1.exe!wmainCRTStartup + 0x0d (f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c; line: 377;)
-  in kernel32.dll!BaseThreadInitThunk (C:\Windows\syswow64\kernel32.dll; address: 0x74af343d)
-  in ntdll.dll!RtlInitializeExceptionChain (C:\Windows\SysWOW64\ntdll.dll; address: 0x770c9832)
-  in ntdll.dll!RtlInitializeExceptionChain (C:\Windows\SysWOW64\ntdll.dll; address: 0x770c9805)
+/* Example output:
+
+Exception: Width must be positive
+  in ErrLib_Demo.exe!CalcRectangleArea + 0x7c (c:\repos\errlib\errlib_demo\main.cpp; line: 10;)
+  in ErrLib_Demo.exe!func1 + 0x3f (c:\repos\errlib\errlib_demo\main.cpp; line: 17;)
+  in ErrLib_Demo.exe!func + 0x50 (c:\repos\errlib\errlib_demo\main.cpp; line: 25;)
+  in ErrLib_Demo.exe!main + 0x28 (c:\repos\errlib\errlib_demo\main.cpp; line: 39;)
+  in ErrLib_Demo.exe!__tmainCRTStartup + 0x199 (f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c; line: 536;)
+  in ErrLib_Demo.exe!mainCRTStartup + 0x0d (f:\dd\vctools\crt_bld\self_x86\crt\src\crtexe.c; line: 377;)
+  in KERNEL32.DLL!BaseThreadInitThunk (C:\WINDOWS\System32\KERNEL32.DLL; address: 0x7781fa29)
+  in ntdll.dll!RtlGetAppContainerNamedObjectPath (C:\WINDOWS\SYSTEM32\ntdll.dll; address: 0x77967a9e)
+  in ntdll.dll!RtlGetAppContainerNamedObjectPath (C:\WINDOWS\SYSTEM32\ntdll.dll; address: 0x77967a6e)
 */
+===============================================================================================================
 
 For more code examples, see Examples subdirectory.
 
-========================================================================
-
 Functions list is available in online API documentation: https://msdn-whiteknight.github.io/ErrLib/
-
-========================================================================

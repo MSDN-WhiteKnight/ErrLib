@@ -1,71 +1,40 @@
-//Project: ErrLib Test 
+//Project: ErrLib Demo 
 //Author: MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
 
 #include <stdio.h>
 #include "ErrLib.h"
 #include "ErrLib_CPP.h"
 
-/********************************************************************************/
+// Function that throws exception when parameter value is invalid
+float CalcRectangleArea(float width, float height){
+    if(width<=0.0) throw ErrLib::Exception(L"Width must be positive");
+    if(height<=0.0) throw ErrLib::Exception(L"Height must be positive");
 
-LONG WINAPI MyExceptionCallback (struct _EXCEPTION_POINTERS* ex, LPCWSTR mes, LPCWSTR stack){
-    //display error information
-    fwprintf(stderr,L"Callback %s\n %s\n",mes,stack);   		
-
-    exit(1);
-    return EXCEPTION_CONTINUE_SEARCH; //crash as usual
+    return width * height;
 }
 
 void func1(){
-    int a=0;
-    int c;
-    c = 1/a;
-    printf("%d",c);
+    float s = CalcRectangleArea(0.0, 2.0);
+    wprintf(L"%f\n", s);
 }
 
 void func(){
-    func1();
-}
-
-void threadFunction(void *param)
-{
-    __try
+    try
     {
-        func();
+        func1();
     }
-    ERRLIB_CATCH_ALL
+    catch(ErrLib::Exception& ex)
     {
-        ErrLib_LogExceptionInfo(ErrLib_Except_GetCode(),ErrLib_Except_GetMessage(),ErrLib_Except_GetStackTrace(),TRUE);
-    }
-}
-
-void ErrLibCppDemo(){
-    try{
-        func();
-    }
-    catch(ErrLib::Exception& e){
-        WCHAR buf[1024]=L"";
-        fputws(L"ErrLib::Exception\r\n", stdout);
-
-        e.GetMessageText(buf,1024);
-        fputws(buf, stdout);
-        fputws(L"\r\n", stdout);
-
-        CONTEXT ctx;
-        e.GetContext(&ctx);
-        ErrLib_PrintStack(&ctx, buf, 1024);
-        fputws(buf, stdout);
+        // Catch exception and print diagnostic information
+        wprintf(L"Exception: %s\n%s", ex.GetMsg().c_str(), ex.PrintStackTrace().c_str());
     }
 }
 
 int main()
-{		
-    DWORD_PTR p;
+{
     ErrLib_Initialize();
-	
-    p = (DWORD_PTR)&func1;
-    printf("0x%llx\n",(ULONGLONG)p);
 
-    _beginthread(threadFunction, 0, NULL);
+    func();
 
     getchar();
     return 0;
