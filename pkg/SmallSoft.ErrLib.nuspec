@@ -18,6 +18,7 @@
         <file src="build\native\x86\*" target="build/native/x86/" />
         <file src="build\native\x64\*" target="build/native/x64/" />
         <file src="build\ErrLib.h" target="build/" />
+        <file src="build\ErrLib_CPP.h" target="build/" />
         <file src="build\SmallSoft.Errlib.props" target="build/" />
         <file src="ReadMe.txt" target="" />
 </files>
