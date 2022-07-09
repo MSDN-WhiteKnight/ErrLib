@@ -13,6 +13,9 @@
 const DWORD ERRLIB_CPP_EXCEPTION = 0xC0400002;
 
 #ifdef __cplusplus
+/**
+ * ErrLib public C++ API 
+ */
 namespace ErrLib{
 
 /**
@@ -149,7 +152,7 @@ public:
     /**
      * Creates a new WinapiException using the error code and message from the last WINAPI error
      * @param localized The value indicating whether the exception message should use the current OS locale
-     * If the **localized** parameter is `true`, the message is in language of the current OS locale. Otherwise, it is always in English.
+     * @note If the **localized** parameter is `true`, the message is in language of the current OS locale. Otherwise, it is always in English.
      */
     static WinapiException FromLastError(bool localized){
         DWORD code = GetLastError();

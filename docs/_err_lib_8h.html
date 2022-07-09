@@ -30,13 +30,15 @@
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="files.html"><span>Files</span></a></li>
     </ul>
   </div>
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="files.html"><span>File&#160;List</span></a></li>
-      <li><a href="globals.html"><span>Globals</span></a></li>
+      <li><a href="globals.html"><span>File&#160;Members</span></a></li>
     </ul>
   </div>
 <div id="nav-path" class="navpath">
@@ -46,7 +48,9 @@
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">ErrLib.h File Reference</div></div>
 </div><!--header-->
@@ -54,6 +58,13 @@
 
 <p><a href="_err_lib_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstruct_e_r_r_l_i_b___s_t_a_c_k___f_r_a_m_e.html">structERRLIB_STACK_FRAME</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstruct_e_r_r_l_i_b___s_t_a_c_k___t_r_a_c_e.html">structERRLIB_STACK_TRACE</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:af241747094a2a805e898f68e52e8a225"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#af241747094a2a805e898f68e52e8a225">ErrLib_MessageLen</a>&#160;&#160;&#160;1024</td></tr>
@@ -74,6 +85,14 @@ Macros</h2></td></tr>
 <tr class="separator:a444818e087b2b3f2ce5b602950566f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b8c5e7279e1d432cc0ab04b91b06c69"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a4b8c5e7279e1d432cc0ab04b91b06c69">ERRLIB_OUTPUT_EVENT_LOG</a>&#160;&#160;&#160;4</td></tr>
 <tr class="separator:a4b8c5e7279e1d432cc0ab04b91b06c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08f984d4b53e4cc0935862237f3863a9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a08f984d4b53e4cc0935862237f3863a9">ERRLIB_OUTPUT_CUSTOM</a>&#160;&#160;&#160;5</td></tr>
+<tr class="separator:a08f984d4b53e4cc0935862237f3863a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ff2234c09f96214487d90725bdf135f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a1ff2234c09f96214487d90725bdf135f">ERRLIB_SYMBOL_NAME</a>&#160;&#160;&#160;1</td></tr>
+<tr class="separator:a1ff2234c09f96214487d90725bdf135f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57062488de24b991d4ccc796f1026c2a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a57062488de24b991d4ccc796f1026c2a">ERRLIB_SYMBOL_MODULE</a>&#160;&#160;&#160;2</td></tr>
+<tr class="separator:a57062488de24b991d4ccc796f1026c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f6231ed903dc1983968c6284d3616c2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a8f6231ed903dc1983968c6284d3616c2">ERRLIB_SYMBOL_SOURCE</a>&#160;&#160;&#160;3</td></tr>
+<tr class="separator:a8f6231ed903dc1983968c6284d3616c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa082abe9583a38cdb3d65742d3dabf40"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#aa082abe9583a38cdb3d65742d3dabf40">ERRLIB_THROW</a>(mes)</td></tr>
 <tr class="separator:aa082abe9583a38cdb3d65742d3dabf40"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62db2543a2ce82a71a979f864dbc247b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a62db2543a2ce82a71a979f864dbc247b">ERRLIB_THROW_IF_EQUAL</a>(var,  value,  func)</td></tr>
@@ -87,10 +106,19 @@ Macros</h2></td></tr>
 <tr class="memitem:ad0329f38208e3bf15640c1916f6b57d2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#ad0329f38208e3bf15640c1916f6b57d2">ERRLIB_CATCH</a>(code)&#160;&#160;&#160;__except(ErrLib_CatchCode(GetExceptionInformation(),code))</td></tr>
 <tr class="separator:ad0329f38208e3bf15640c1916f6b57d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a2594fabbdf1d553c5e49dc8e517fafd9"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structstruct_e_r_r_l_i_b___s_t_a_c_k___f_r_a_m_e.html">structERRLIB_STACK_FRAME</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a></td></tr>
+<tr class="separator:a2594fabbdf1d553c5e49dc8e517fafd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cfbd3fb46599af1053000f0ab358db8"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structstruct_e_r_r_l_i_b___s_t_a_c_k___t_r_a_c_e.html">structERRLIB_STACK_TRACE</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a></td></tr>
+<tr class="separator:a7cfbd3fb46599af1053000f0ab358db8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a6257a7a9fa77681d872f40fbb13c1936"><td class="memItemLeft" align="right" valign="top">ERRLIB_API void __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a6257a7a9fa77681d872f40fbb13c1936">ErrLib_ErrorMes</a> (LPTSTR lpszFunction, DWORD dw, WCHAR *buf)</td></tr>
 <tr class="separator:a6257a7a9fa77681d872f40fbb13c1936"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a794e46fc498eed0dee5f0992944d8263"><td class="memItemLeft" align="right" valign="top">ERRLIB_API void __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a794e46fc498eed0dee5f0992944d8263">ErrLib_SetLoggingCallback</a> (ERRLIB_LOGGING_CALLBACK pCallback)</td></tr>
+<tr class="separator:a794e46fc498eed0dee5f0992944d8263"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4602299822f71c2115cb3deda420878"><td class="memItemLeft" align="right" valign="top">ERRLIB_API void __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#ab4602299822f71c2115cb3deda420878">ErrLib_SetExceptionCallback</a> (ERRLIB_EXCEPTION_CALLBACK pCallback)</td></tr>
 <tr class="separator:ab4602299822f71c2115cb3deda420878"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03d86a9e84265ed0df853d8f12008e55"><td class="memItemLeft" align="right" valign="top">ERRLIB_API void __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a03d86a9e84265ed0df853d8f12008e55">ErrLib_SetLogFilePath</a> (LPCWSTR path)</td></tr>
@@ -103,6 +131,22 @@ Functions</h2></td></tr>
 <tr class="separator:a208263afa17de47546b00cfed1c4b0c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf2023e54ebb2107b712d1aee4b8368e"><td class="memItemLeft" align="right" valign="top">ERRLIB_API BOOL __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#abf2023e54ebb2107b712d1aee4b8368e">ErrLib_UnregisterEventSource</a> ()</td></tr>
 <tr class="separator:abf2023e54ebb2107b712d1aee4b8368e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a090099cee16e716d7c88c7e43cb38362"><td class="memItemLeft" align="right" valign="top">ERRLIB_API <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a090099cee16e716d7c88c7e43cb38362">ErrLib_GetStackTrace</a> (CONTEXT *ctx)</td></tr>
+<tr class="separator:a090099cee16e716d7c88c7e43cb38362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f0ea07c87ba92b9bdd4da66395f98b5"><td class="memItemLeft" align="right" valign="top">ERRLIB_API int __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a8f0ea07c87ba92b9bdd4da66395f98b5">ErrLib_ST_GetFramesCount</a> (const <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> *pStack)</td></tr>
+<tr class="separator:a8f0ea07c87ba92b9bdd4da66395f98b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b519c3fc76c459f2c88e9a5c81d0e09"><td class="memItemLeft" align="right" valign="top">ERRLIB_API const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *__stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a3b519c3fc76c459f2c88e9a5c81d0e09">ErrLib_ST_GetFrame</a> (const <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> *pStack, int n)</td></tr>
+<tr class="separator:a3b519c3fc76c459f2c88e9a5c81d0e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f5651e0f4f770a1c6a57158c33220cd"><td class="memItemLeft" align="right" valign="top">ERRLIB_API uint64_t __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a8f5651e0f4f770a1c6a57158c33220cd">ErrLib_ST_GetAddress</a> (const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *pFrame)</td></tr>
+<tr class="separator:a8f5651e0f4f770a1c6a57158c33220cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b15ffcc97e7aeb3cd27b03e40c3eae"><td class="memItemLeft" align="right" valign="top">ERRLIB_API uint64_t __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#ad2b15ffcc97e7aeb3cd27b03e40c3eae">ErrLib_ST_GetDisplacement</a> (const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *pFrame)</td></tr>
+<tr class="separator:ad2b15ffcc97e7aeb3cd27b03e40c3eae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea5ff1a5a48af5afa8da3dbfbe5585aa"><td class="memItemLeft" align="right" valign="top">ERRLIB_API const WCHAR *__stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#aea5ff1a5a48af5afa8da3dbfbe5585aa">ErrLib_ST_GetStringProperty</a> (const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *pFrame, int propId)</td></tr>
+<tr class="separator:aea5ff1a5a48af5afa8da3dbfbe5585aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9864b12a8464d7ce3efc0283f39d92e1"><td class="memItemLeft" align="right" valign="top">ERRLIB_API DWORD __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a9864b12a8464d7ce3efc0283f39d92e1">ErrLib_ST_GetSymLine</a> (const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *pFrame)</td></tr>
+<tr class="separator:a9864b12a8464d7ce3efc0283f39d92e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d2b536e4305daba76162708b395b51a"><td class="memItemLeft" align="right" valign="top">ERRLIB_API void __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a4d2b536e4305daba76162708b395b51a">ErrLib_FreeStackTrace</a> (<a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> *pStack)</td></tr>
+<tr class="separator:a4d2b536e4305daba76162708b395b51a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48874a8625dd5b8f24a27169fa1178c2"><td class="memItemLeft" align="right" valign="top">ERRLIB_API void __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a48874a8625dd5b8f24a27169fa1178c2">ErrLib_PrintStack</a> (CONTEXT *ctx, WCHAR *dest, size_t cch)</td></tr>
 <tr class="separator:a48874a8625dd5b8f24a27169fa1178c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc23302cc72de2f539b097ff843a058d"><td class="memItemLeft" align="right" valign="top">ERRLIB_API void __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#abc23302cc72de2f539b097ff843a058d">ErrLib_GetExceptionMessage</a> (struct _EXCEPTION_POINTERS *ExceptionInfo, LPWSTR dest, size_t cch)</td></tr>
@@ -117,9 +161,11 @@ Functions</h2></td></tr>
 <tr class="separator:acea908b28d75729c5a0f6b8c9a8c489e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02dcb60f7c8db7135db85713c6474172"><td class="memItemLeft" align="right" valign="top">ERRLIB_API LPWSTR __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#a02dcb60f7c8db7135db85713c6474172">ErrLib_Except_GetStackTrace</a> ()</td></tr>
 <tr class="separator:a02dcb60f7c8db7135db85713c6474172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae33f62cf9a2f0ae71ee44532f784741e"><td class="memItemLeft" align="right" valign="top">ERRLIB_API <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> __stdcall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="_err_lib_8h.html#ae33f62cf9a2f0ae71ee44532f784741e">ErrLib_Except_GetStackTraceData</a> ()</td></tr>
+<tr class="separator:ae33f62cf9a2f0ae71ee44532f784741e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >ErrLib public API </p>
+<div class="textblock"><p ><a class="el" href="namespace_err_lib.html">ErrLib</a> public API </p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ad0329f38208e3bf15640c1916f6b57d2" name="ad0329f38208e3bf15640c1916f6b57d2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad0329f38208e3bf15640c1916f6b57d2">&#9670;&nbsp;</a></span>ERRLIB_CATCH</h2>
@@ -212,6 +258,23 @@ If the function return anything else rather then BOOL value, use ERRLIB_THROW_IF
 
 </div>
 </div>
+<a id="a08f984d4b53e4cc0935862237f3863a9" name="a08f984d4b53e4cc0935862237f3863a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08f984d4b53e4cc0935862237f3863a9">&#9670;&nbsp;</a></span>ERRLIB_OUTPUT_CUSTOM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERRLIB_OUTPUT_CUSTOM&#160;&#160;&#160;5</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Specifies that logging functions should write information into the custom logging target </p><dl class="section note"><dt>Note</dt><dd>This configuration parameter is used with ErrLib_SetParameter function (type: BOOL). </dd>
+<dd>
+To set the custom logging target callback, use ErrLib_SetLoggingCallback. </dd></dl>
+
+</div>
+</div>
 <a id="a4b8c5e7279e1d432cc0ab04b91b06c69" name="a4b8c5e7279e1d432cc0ab04b91b06c69"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4b8c5e7279e1d432cc0ab04b91b06c69">&#9670;&nbsp;</a></span>ERRLIB_OUTPUT_EVENT_LOG</h2>
 
@@ -284,6 +347,51 @@ If the function return anything else rather then BOOL value, use ERRLIB_THROW_IF
       </table>
 </div><div class="memdoc">
 <p >Specifies the maximum stack trace length supported by the ErrLib_PrintStack function </p>
+
+</div>
+</div>
+<a id="a57062488de24b991d4ccc796f1026c2a" name="a57062488de24b991d4ccc796f1026c2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57062488de24b991d4ccc796f1026c2a">&#9670;&nbsp;</a></span>ERRLIB_SYMBOL_MODULE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERRLIB_SYMBOL_MODULE&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Stack frame property: Module file path </p>
+
+</div>
+</div>
+<a id="a1ff2234c09f96214487d90725bdf135f" name="a1ff2234c09f96214487d90725bdf135f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ff2234c09f96214487d90725bdf135f">&#9670;&nbsp;</a></span>ERRLIB_SYMBOL_NAME</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERRLIB_SYMBOL_NAME&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Stack frame property: Symbol name </p>
+
+</div>
+</div>
+<a id="a8f6231ed903dc1983968c6284d3616c2" name="a8f6231ed903dc1983968c6284d3616c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f6231ed903dc1983968c6284d3616c2">&#9670;&nbsp;</a></span>ERRLIB_SYMBOL_SOURCE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERRLIB_SYMBOL_SOURCE&#160;&#160;&#160;3</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Stack frame property: Symbol source file path </p>
 
 </div>
 </div>
@@ -440,6 +548,41 @@ If the function return anything else rather then BOOL value, use ERRLIB_THROW_IF
 
 </div>
 </div>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="a2594fabbdf1d553c5e49dc8e517fafd9" name="a2594fabbdf1d553c5e49dc8e517fafd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2594fabbdf1d553c5e49dc8e517fafd9">&#9670;&nbsp;</a></span>ERRLIB_STACK_FRAME</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="structstruct_e_r_r_l_i_b___s_t_a_c_k___f_r_a_m_e.html">structERRLIB_STACK_FRAME</a> <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Represents a stack frame, an object that contains information about an individual call in stack trace </p><dl class="section note"><dt>Note</dt><dd>Do not access the fields of this structure directly, they are considered private implementation details. </dd>
+<dd>
+Use ErrLib_ST_... functions instead to get stack frame properties. </dd></dl>
+
+</div>
+</div>
+<a id="a7cfbd3fb46599af1053000f0ab358db8" name="a7cfbd3fb46599af1053000f0ab358db8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cfbd3fb46599af1053000f0ab358db8">&#9670;&nbsp;</a></span>ERRLIB_STACK_TRACE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="structstruct_e_r_r_l_i_b___s_t_a_c_k___t_r_a_c_e.html">structERRLIB_STACK_TRACE</a> <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Represents a stack trace, a chain of function calls at the particular point of thread's execution </p><dl class="section note"><dt>Note</dt><dd>Do not access the fields of this structure directly, they are considered private implementation details. </dd>
+<dd>
+Use ErrLib_ST_... functions instead to get stack trace properties. </dd></dl>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a6257a7a9fa77681d872f40fbb13c1936" name="a6257a7a9fa77681d872f40fbb13c1936"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6257a7a9fa77681d872f40fbb13c1936">&#9670;&nbsp;</a></span>ErrLib_ErrorMes()</h2>
@@ -536,10 +679,56 @@ If the function return anything else rather then BOOL value, use ERRLIB_THROW_IF
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Gets the stack trace for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block</p>
-<dl class="section note"><dt>Note</dt><dd>When used outside of the exception handler block, the behaviour is undefined. </dd>
+<p >Gets the stack trace text for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block</p>
+<dl class="section note"><dt>Note</dt><dd>When used outside of the exception handler block, the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="ae33f62cf9a2f0ae71ee44532f784741e" name="ae33f62cf9a2f0ae71ee44532f784741e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae33f62cf9a2f0ae71ee44532f784741e">&#9670;&nbsp;</a></span>ErrLib_Except_GetStackTraceData()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> __stdcall ErrLib_Except_GetStackTraceData </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Gets the stack trace information for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block</p>
+<dl class="section return"><dt>Returns</dt><dd>The structure that contains stack trace information </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>When you no longer need the stack trace information, free resources associated with it by calling ErrLib_FreeStackTrace. </dd>
 <dd>
-Starting from version 1.1, this function is not supported in VS2015+ when compiling in debug x64 configuration (it always returns empty string in this case). </dd></dl>
+When used outside of the exception handler block, the behaviour is undefined. </dd></dl>
+
+</div>
+</div>
+<a id="a4d2b536e4305daba76162708b395b51a" name="a4d2b536e4305daba76162708b395b51a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d2b536e4305daba76162708b395b51a">&#9670;&nbsp;</a></span>ErrLib_FreeStackTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API void __stdcall ErrLib_FreeStackTrace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> *&#160;</td>
+          <td class="paramname"><em>pStack</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Releases resources associated with the specified stack trace structure</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pStack</td><td>The pointer to a ERRLIB_STACK_TRACE structure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Do not pass the stack trace into any other functions after it has been freed by this function. </dd></dl>
 
 </div>
 </div>
@@ -583,6 +772,35 @@ Starting from version 1.1, this function is not supported in VS2015+ when compil
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a090099cee16e716d7c88c7e43cb38362" name="a090099cee16e716d7c88c7e43cb38362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a090099cee16e716d7c88c7e43cb38362">&#9670;&nbsp;</a></span>ErrLib_GetStackTrace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> __stdcall ErrLib_GetStackTrace </td>
+          <td>(</td>
+          <td class="paramtype">CONTEXT *&#160;</td>
+          <td class="paramname"><em>ctx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Gets the stack trace information for the specified context record</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctx</td><td>The pointer to a CONTEXT structure, containing valid context record on input </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The structure that contains stack trace information </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>You can obtain a context record via <a href="https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlcapturecontext">RtlCaptureContext</a> function or from the exception data. </dd>
+<dd>
+When you no longer need the stack trace information, free resources associated with it by calling ErrLib_FreeStackTrace. </dd></dl>
 
 </div>
 </div>
@@ -823,6 +1041,34 @@ When outputting information in message box, stack trace is not included, even if
 
 </div>
 </div>
+<a id="a794e46fc498eed0dee5f0992944d8263" name="a794e46fc498eed0dee5f0992944d8263"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a794e46fc498eed0dee5f0992944d8263">&#9670;&nbsp;</a></span>ErrLib_SetLoggingCallback()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API void __stdcall ErrLib_SetLoggingCallback </td>
+          <td>(</td>
+          <td class="paramtype">ERRLIB_LOGGING_CALLBACK&#160;</td>
+          <td class="paramname"><em>pCallback</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Sets current logging callback - the user-defined function which will be used as a custom logging target</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pCallback</td><td>The pointer to callback function</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>The callback function must be defined as follows: <code>void WINAPI MyLoggingCallback(LPCWSTR pStr, void* pExtraInfo) {...}</code></p>
+<p >The <b>pStr</b> parameter of the callback function points to the logged message. The <b>pExtraInfo</b> parameter is currently unused.</p>
+<dl class="section note"><dt>Note</dt><dd>The logging callback is only used when ERRLIB_OUTPUT_CUSTOM parameter is set to TRUE </dd></dl>
+
+</div>
+</div>
 <a id="a026272eb4c690d990c6d7c5dcde03f83" name="a026272eb4c690d990c6d7c5dcde03f83"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a026272eb4c690d990c6d7c5dcde03f83">&#9670;&nbsp;</a></span>ErrLib_SetParameter()</h2>
 
@@ -861,8 +1107,192 @@ When outputting information in message box, stack trace is not included, even if
 <li>ERRLIB_OUTPUT_LOGFILE (1). Specifies that logging functions should write information into the log file. Type: BOOL.</li>
 <li>ERRLIB_OUTPUT_STDERR (2). Specifies that logging functions should write information into stderr stream (usually console). Type: BOOL.</li>
 <li>ERRLIB_OUTPUT_MBOX (3). Specifies that logging functions should display information as message box. Type: BOOL.</li>
-<li>ERRLIB_OUTPUT_EVENT_LOG (4). Specifies that logging functions should write information into Windows Event Log. Type: BOOL. </li>
+<li>ERRLIB_OUTPUT_EVENT_LOG (4). Specifies that logging functions should write information into Windows Event Log. Type: BOOL.</li>
+<li>ERRLIB_OUTPUT_CUSTOM (5). Specifies that logging functions should write information into the custom logging target. Type: BOOL. </li>
 </ul>
+
+</div>
+</div>
+<a id="a8f5651e0f4f770a1c6a57158c33220cd" name="a8f5651e0f4f770a1c6a57158c33220cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f5651e0f4f770a1c6a57158c33220cd">&#9670;&nbsp;</a></span>ErrLib_ST_GetAddress()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *&#160;</td>
+          <td class="paramname"><em>pFrame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Gets the symbol address from the specified stack frame</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pFrame</td><td>The pointer to a ERRLIB_STACK_FRAME structure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The 64-bit unsigned integer the represents the symbol address </dd></dl>
+
+</div>
+</div>
+<a id="ad2b15ffcc97e7aeb3cd27b03e40c3eae" name="ad2b15ffcc97e7aeb3cd27b03e40c3eae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2b15ffcc97e7aeb3cd27b03e40c3eae">&#9670;&nbsp;</a></span>ErrLib_ST_GetDisplacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *&#160;</td>
+          <td class="paramname"><em>pFrame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Gets the stack frame displacement from the symbol address (the difference between the instruction pointer value and the starting address of the function)</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pFrame</td><td>The pointer to a ERRLIB_STACK_FRAME structure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The 64-bit unsigned integer the represents the stack frame displacement </dd></dl>
+
+</div>
+</div>
+<a id="a3b519c3fc76c459f2c88e9a5c81d0e09" name="a3b519c3fc76c459f2c88e9a5c81d0e09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b519c3fc76c459f2c88e9a5c81d0e09">&#9670;&nbsp;</a></span>ErrLib_ST_GetFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *__stdcall ErrLib_ST_GetFrame </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> *&#160;</td>
+          <td class="paramname"><em>pStack</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Gets the frame with the specified number from a stack trace</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pStack</td><td>The pointer to a ERRLIB_STACK_TRACE structure </td></tr>
+    <tr><td class="paramname">n</td><td>The frame number to get </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The pointer to a ERRLIB_STACK_FRAME structure that contains the stack frame data </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The returned structure is stored in a memory allocated as part of the stack trace data and is freed when you call ErrLib_FreeStackTrace. </dd></dl>
+
+</div>
+</div>
+<a id="a8f0ea07c87ba92b9bdd4da66395f98b5" name="a8f0ea07c87ba92b9bdd4da66395f98b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f0ea07c87ba92b9bdd4da66395f98b5">&#9670;&nbsp;</a></span>ErrLib_ST_GetFramesCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_err_lib_8h.html#a7cfbd3fb46599af1053000f0ab358db8">ERRLIB_STACK_TRACE</a> *&#160;</td>
+          <td class="paramname"><em>pStack</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Gets the number of stack frames in the specified stack trace</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pStack</td><td>The pointer to a ERRLIB_STACK_TRACE structure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The integer number of stack frames </dd></dl>
+
+</div>
+</div>
+<a id="aea5ff1a5a48af5afa8da3dbfbe5585aa" name="aea5ff1a5a48af5afa8da3dbfbe5585aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea5ff1a5a48af5afa8da3dbfbe5585aa">&#9670;&nbsp;</a></span>ErrLib_ST_GetStringProperty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API const WCHAR *__stdcall ErrLib_ST_GetStringProperty </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *&#160;</td>
+          <td class="paramname"><em>pFrame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>propId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Gets the value of the string property associated with this stack frame</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pFrame</td><td>The pointer to a ERRLIB_STACK_FRAME structure </td></tr>
+    <tr><td class="paramname">propId</td><td>The integer value that identifies the property to get </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the null-terminated wide character string that contains the property value, or NULL if the property value is not set. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Supported property ids are: ERRLIB_SYMBOL_NAME, ERRLIB_SYMBOL_MODULE and ERRLIB_SYMBOL_SOURCE. </dd>
+<dd>
+The returned string is stored in a memory allocated as part of the stack trace data and is freed when you call ErrLib_FreeStackTrace. </dd></dl>
+
+</div>
+</div>
+<a id="a9864b12a8464d7ce3efc0283f39d92e1" name="a9864b12a8464d7ce3efc0283f39d92e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9864b12a8464d7ce3efc0283f39d92e1">&#9670;&nbsp;</a></span>ErrLib_ST_GetSymLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="_err_lib_8h.html#a2594fabbdf1d553c5e49dc8e517fafd9">ERRLIB_STACK_FRAME</a> *&#160;</td>
+          <td class="paramname"><em>pFrame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Gets the source line number from the specified stack frame</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">pFrame</td><td>The pointer to a ERRLIB_STACK_FRAME structure </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The unsigned integer the represents the source line number </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This function only returns a valid line number if the ERRLIB_SYMBOL_SOURCE property is set on the stack frame. </dd></dl>
 
 </div>
 </div>
