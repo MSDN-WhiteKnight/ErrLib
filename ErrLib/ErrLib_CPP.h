@@ -124,6 +124,7 @@ public:
     /**
      * Outputs the exception information into configured log targets
      * @param visible Pass `true` if you want to use ERRLIB_OUTPUT_STDERR/ERRLIB_OUTPUT_MBOX logging targets (if they are enabled by configuration flags), `false` otherwise
+     * 
      * This method outputs information into one or more logging targets, configured using ErrLib_SetParameter function.
      * It only outputs information into the stderr stream and message box if the **visible** parameter is `true` (and if respective flags are enabled).
      * By default, the enabled logging targets are log file and stderr stream. 
