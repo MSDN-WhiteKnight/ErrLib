@@ -1,4 +1,4 @@
-name: ErrLib-CI-C
+name: ErrLib CompileAsC
 
 on: 
   push:
@@ -20,4 +20,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
           name: Output
-          path: Debug/
+          path: ErrLib/Debug/
