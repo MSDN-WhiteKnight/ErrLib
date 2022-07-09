@@ -1135,6 +1135,8 @@ ERRLIB_API DWORD __stdcall ErrLib_Except_GetCode(){
 
 ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWORD FilteredCode){
 
+     ERRLIB_STACK_TRACE* pStack = NULL;
+
     if(ex->ExceptionRecord->ExceptionCode == FilteredCode){
         *((DWORD*)ErrLib_LastExceptionCode_GetPointer()) = ex->ExceptionRecord->ExceptionCode;
         ErrLib_GetExceptionMessage(ex,ErrLib_Except_GetMessage(),ErrLib_MessageLen);
@@ -1142,7 +1144,7 @@ ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWO
         if (!IsStackTraceDisabled()) {
             ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
 
-            ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
+            pStack = ErrLib_GetStackTracePointer();
             pStack->count = 0;
             ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);
         }
@@ -1154,13 +1156,15 @@ ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWO
 
 ERRLIB_API LONG __stdcall ErrLib_CatchAll( struct _EXCEPTION_POINTERS * ex){
 
+    ERRLIB_STACK_TRACE* pStack = NULL;
+
     *((DWORD*)ErrLib_LastExceptionCode_GetPointer()) = ex->ExceptionRecord->ExceptionCode;
     ErrLib_GetExceptionMessage(ex,ErrLib_Except_GetMessage(),ErrLib_MessageLen);
 
     if (!IsStackTraceDisabled()) {
         ErrLib_PrintStack(ex->ContextRecord, ErrLib_Except_GetStackTrace(), ErrLib_StackLen);
         
-        ERRLIB_STACK_TRACE* pStack = ErrLib_GetStackTracePointer();
+        pStack = ErrLib_GetStackTracePointer();
         pStack->count = 0;
         ErrLib_GetStackTraceImpl(ex->ContextRecord, pStack);
     }
