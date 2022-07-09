@@ -1,0 +1,23 @@
+name: ErrLib CompileAsC
+
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  ci:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build with MSBuild
+      run: |
+        $Env:Path += ";${Env:ProgramFiles}\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"; msbuild ErrLib\ErrLib.vcxproj -p:ErrLibCompilationMode=CompileAsC
+    - name: Archive build results
+      uses: actions/upload-artifact@v1
+      with:
+          name: Output
+          path: ErrLib/Debug/
