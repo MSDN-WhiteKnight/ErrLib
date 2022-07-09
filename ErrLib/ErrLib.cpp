@@ -35,7 +35,7 @@ DWORD volatile ErrLib_tlsiStrBuf = 0;
 DWORD volatile ErrLib_tlsiExArgs = 0;
 
 // TLS ID: Last exception stack trace
-DWORD volatile ErrLib_tlsiStackTrace = 0;
+DWORD volatile ErrLib_tlsiStackTrace = 0; class C {};
 
 #ifdef __cplusplus
 extern "C" {
