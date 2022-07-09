@@ -9,6 +9,7 @@
 #define ErrLib_H_INCLUDED
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include <windows.h>
 #include <strsafe.h>
@@ -97,6 +98,21 @@
 #define ERRLIB_PARAM_VISUALCPPVERSION 100
 #define ERRLIB_PARAM_ISDEBUGBUILD 101
 
+/**
+ * Stack frame property: Symbol name
+ */
+#define ERRLIB_SYMBOL_NAME   1
+
+/**
+ * Stack frame property: Module file path
+ */
+#define ERRLIB_SYMBOL_MODULE 2
+
+/**
+ * Stack frame property: Symbol source file path
+ */
+#define ERRLIB_SYMBOL_SOURCE 3
+
 // *** Typedefs *** 
 
 //Function pointer type used as unhandled exception callback
@@ -104,6 +120,32 @@ typedef LONG  (WINAPI * ERRLIB_EXCEPTION_CALLBACK) ( struct _EXCEPTION_POINTERS 
 
 //Function pointer type used for custom logging targets
 typedef void (WINAPI * ERRLIB_LOGGING_CALLBACK) (LPCWSTR, void*);
+
+/**
+ * Represents a stack frame, an object that contains information about an individual call in stack trace
+ * @note Do not access the fields of this structure directly, they are considered private implementation details. 
+ * @note Use ErrLib_ST_... functions instead to get stack frame properties.
+ */
+typedef struct structERRLIB_STACK_FRAME{
+    uint64_t addr;
+    uint64_t displacement;
+    WCHAR symbol[MAX_SYM_NAME];
+    WCHAR module[MAX_PATH];
+    WCHAR src_file[MAX_PATH];
+    DWORD src_line;
+} ERRLIB_STACK_FRAME;
+
+/**
+ * Represents a stack trace, a chain of function calls at the particular point of thread's execution
+ * @note Do not access the fields of this structure directly, they are considered private implementation details. 
+ * @note Use ErrLib_ST_... functions instead to get stack trace properties.
+ */
+typedef struct structERRLIB_STACK_TRACE{
+    ERRLIB_STACK_FRAME *data;
+    int capacity;
+    int count;
+    BOOL isOnHeap;
+} ERRLIB_STACK_TRACE;
 
 // *** Custom exception codes for SEH *** 
 
@@ -130,6 +172,8 @@ extern "C" {
  * @param buf Pointer to character array to store the result string
  */
 ERRLIB_API void __stdcall ErrLib_ErrorMes(LPTSTR lpszFunction,DWORD dw,WCHAR* buf);
+
+ERRLIB_API DWORD __stdcall ErrLib_GetWinapiErrorMessage(DWORD dwCode, BOOL localized, WCHAR* pOutput, int cch);
 
 //Gets filename from full path
 ERRLIB_API WCHAR* __stdcall ErrLib_FileNameFromPathW(WCHAR* path);
@@ -221,6 +265,83 @@ ERRLIB_API BOOL __stdcall ErrLib_RegisterEventSource();
 ERRLIB_API BOOL __stdcall ErrLib_UnregisterEventSource();
 
 /**
+ * Gets the stack trace information for the specified context record
+ * 
+ * @param ctx The pointer to a CONTEXT structure, containing valid context record on input
+ * @returns The structure that contains stack trace information
+ * @note You can obtain a context record via [RtlCaptureContext](https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-rtlcapturecontext) function 
+ * or from the exception data.
+ * @note When you no longer need the stack trace information, free resources associated with it by calling ErrLib_FreeStackTrace.
+ */
+ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_GetStackTrace(CONTEXT* ctx);
+
+/**
+ * Gets the number of stack frames in the specified stack trace
+ * 
+ * @param pStack The pointer to a ERRLIB_STACK_TRACE structure
+ * @returns The integer number of stack frames
+ */
+ERRLIB_API int __stdcall ErrLib_ST_GetFramesCount(const ERRLIB_STACK_TRACE* pStack);
+
+/**
+ * Gets the frame with the specified number from a stack trace
+ * 
+ * @param pStack The pointer to a ERRLIB_STACK_TRACE structure
+ * @param n The frame number to get
+ * @returns The pointer to a ERRLIB_STACK_FRAME structure that contains the stack frame data
+ * @note The returned structure is stored in a memory allocated as part of the stack trace data and is freed when 
+ * you call ErrLib_FreeStackTrace.
+ */
+ERRLIB_API const ERRLIB_STACK_FRAME*  __stdcall ErrLib_ST_GetFrame(const ERRLIB_STACK_TRACE* pStack, int n);
+
+/**
+ * Gets the symbol address from the specified stack frame
+ * 
+ * @param pFrame The pointer to a ERRLIB_STACK_FRAME structure
+ * @returns The 64-bit unsigned integer the represents the symbol address
+ */
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetAddress(const ERRLIB_STACK_FRAME* pFrame);
+
+/**
+ * Gets the stack frame displacement from the symbol address (the difference between the instruction pointer value and 
+ * the starting address of the function)
+ * 
+ * @param pFrame The pointer to a ERRLIB_STACK_FRAME structure
+ * @returns The 64-bit unsigned integer the represents the stack frame displacement
+ */
+ERRLIB_API uint64_t __stdcall ErrLib_ST_GetDisplacement(const ERRLIB_STACK_FRAME* pFrame);
+
+/**
+ * Gets the value of the string property associated with this stack frame
+ * 
+ * @param pFrame The pointer to a ERRLIB_STACK_FRAME structure
+ * @param propId The integer value that identifies the property to get
+ * @returns A pointer to the null-terminated wide character string that contains the property value, or NULL 
+ * if the property value is not set.
+ * @note Supported property ids are: ERRLIB_SYMBOL_NAME, ERRLIB_SYMBOL_MODULE and ERRLIB_SYMBOL_SOURCE.
+ * @note The returned string is stored in a memory allocated as part of the stack trace data and is freed when 
+ * you call ErrLib_FreeStackTrace.
+ */
+ERRLIB_API const WCHAR* __stdcall ErrLib_ST_GetStringProperty(const ERRLIB_STACK_FRAME* pFrame, int propId);
+
+/**
+ * Gets the source line number from the specified stack frame
+ * 
+ * @param pFrame The pointer to a ERRLIB_STACK_FRAME structure
+ * @returns The unsigned integer the represents the source line number
+ * @note This function only returns a valid line number if the ERRLIB_SYMBOL_SOURCE property is set on the stack frame.
+ */
+ERRLIB_API DWORD __stdcall ErrLib_ST_GetSymLine(const ERRLIB_STACK_FRAME* pFrame);
+
+/**
+ * Releases resources associated with the specified stack trace structure
+ * 
+ * @param pStack The pointer to a ERRLIB_STACK_TRACE structure
+ * @note Do not pass the stack trace into any other functions after it has been freed by this function.
+ */
+ERRLIB_API void __stdcall ErrLib_FreeStackTrace(ERRLIB_STACK_TRACE* pStack);
+
+/**
  * Prints stack trace for the specified context record
  * 
  * @param ctx The pointer to a CONTEXT structure, containing valid context record on input. 
@@ -289,11 +410,20 @@ ERRLIB_API DWORD __stdcall ErrLib_Except_GetCode();
 ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetMessage();
 
 /**
- * Gets the stack trace for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+ * Gets the stack trace text for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
  * 
  * @note When used outside of the exception handler block, the behaviour is undefined.
  */
 ERRLIB_API LPWSTR __stdcall ErrLib_Except_GetStackTrace();
+
+/**
+ * Gets the stack trace information for the current exception in ERRLIB_CATCH/ERRLIB_CATCH_ALL block
+ * 
+ * @returns The structure that contains stack trace information
+ * @note When you no longer need the stack trace information, free resources associated with it by calling ErrLib_FreeStackTrace.
+ * @note When used outside of the exception handler block, the behaviour is undefined.
+ */
+ERRLIB_API ERRLIB_STACK_TRACE __stdcall ErrLib_Except_GetStackTraceData();
 
 ERRLIB_API LONG __stdcall ErrLib_CatchCode( struct _EXCEPTION_POINTERS * ex, DWORD FilteredCode);
 ERRLIB_API LONG __stdcall ErrLib_CatchAll( struct _EXCEPTION_POINTERS * ex);
@@ -303,6 +433,7 @@ ERRLIB_API LPVOID __stdcall ErrLib_ExArgs_GetPointer();
 
 #ifdef __cplusplus
 ERRLIB_API void __stdcall ErrLib_HResultToString(HRESULT hr,LPTSTR lpszFunction,WCHAR* buf);
+ERRLIB_API void __stdcall ErrLib_GetHResultMessage(HRESULT hr,WCHAR* lpOutput, int cch);
 }//extern "C"
 #endif
 

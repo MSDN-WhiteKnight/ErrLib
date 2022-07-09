@@ -6,7 +6,7 @@ A library to assist in dealing with exceptions and errors in C/C++ Windows Appli
 
 Author: MSDN.WhiteKnight (https://github.com/MSDN-WhiteKnight)
 License: BSD 3-clause
-Requirements: Windows Vista (or newer), Visual Studio 2010 (or newer)
+Requirements: Windows Vista (or newer), Visual Studio 2012 (or newer)
 
 ** Features **
 
