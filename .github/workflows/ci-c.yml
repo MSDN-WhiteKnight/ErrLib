@@ -17,7 +17,7 @@ jobs:
       run: |
         $Env:Path += ";${Env:ProgramFiles}\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\"; msbuild ErrLib\ErrLib.vcxproj -p:ErrLibCompilationMode=CompileAsC
     - name: Archive build results
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
-          name: Output
+          name: OutputC
           path: ErrLib/Debug/
